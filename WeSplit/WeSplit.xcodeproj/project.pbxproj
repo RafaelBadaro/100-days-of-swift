@@ -11,6 +11,8 @@
 		5349E3F42CAB68A600FA378F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5349E3F32CAB68A600FA378F /* ContentView.swift */; };
 		5349E3F62CAB68A700FA378F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5349E3F52CAB68A700FA378F /* Assets.xcassets */; };
 		5349E3F92CAB68A700FA378F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5349E3F82CAB68A700FA378F /* Preview Assets.xcassets */; };
+		5349E4002CBDEF1600FA378F /* MyWeSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5349E3FF2CBDEF1600FA378F /* MyWeSplitView.swift */; };
+		5349E4032CC0966300FA378F /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5349E4022CC0966300FA378F /* ViewExtensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +21,8 @@
 		5349E3F32CAB68A600FA378F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5349E3F52CAB68A700FA378F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5349E3F82CAB68A700FA378F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		5349E3FF2CBDEF1600FA378F /* MyWeSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWeSplitView.swift; sourceTree = "<group>"; };
+		5349E4022CC0966300FA378F /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,8 +55,10 @@
 		5349E3F02CAB68A600FA378F /* WeSplit */ = {
 			isa = PBXGroup;
 			children = (
+				5349E4012CC0965500FA378F /* Extensions */,
 				5349E3F12CAB68A600FA378F /* WeSplitApp.swift */,
 				5349E3F32CAB68A600FA378F /* ContentView.swift */,
+				5349E3FF2CBDEF1600FA378F /* MyWeSplitView.swift */,
 				5349E3F52CAB68A700FA378F /* Assets.xcassets */,
 				5349E3F72CAB68A700FA378F /* Preview Content */,
 			);
@@ -65,6 +71,14 @@
 				5349E3F82CAB68A700FA378F /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		5349E4012CC0965500FA378F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5349E4022CC0966300FA378F /* ViewExtensions.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,6 +152,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5349E3F42CAB68A600FA378F /* ContentView.swift in Sources */,
+				5349E4002CBDEF1600FA378F /* MyWeSplitView.swift in Sources */,
+				5349E4032CC0966300FA378F /* ViewExtensions.swift in Sources */,
 				5349E3F22CAB68A600FA378F /* WeSplitApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
