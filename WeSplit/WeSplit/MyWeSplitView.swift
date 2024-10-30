@@ -8,23 +8,21 @@
 import SwiftUI
 
 struct MyWeSplitView: View {
+    // MARK: State properties
+    @State private var checkAmountText: String = ""
     @State private var checkAmount = 0.0
-    @State private var numberOfPeople = 0
+    @FocusState private var checkAmountIsFocused: Bool
     
-    /*
-     MARK: setting tipPercentage like 0.xxx because the picker is using .percent
-     
-     ChatGPT explanation which I think its valid:
-     The .percent format in SwiftUI expects the value to be in its fractional form, meaning 1.0 represents 100%, and 0.1 represents 10%. This is why when you set tipPercentage = 10, it shows as 1,000% because it interprets that 10 as 1,000%.
-     */
-    @State private var tipPercentage: Double = 0.100
-    @FocusState private var amountIsFocused: Bool
+    @State private var tipPercentageText: String = ""
+    @State private var tipPercentage: Double = 0.0
     @FocusState private var tipPercentageIsFocused: Bool
     
+    @State private var numberOfPeople = 0
+    
+    // MARK: Calculated propertiess
     var totalPerPerson: Double {
         let peopleCount = Double(numberOfPeople + 2)
         let amountPerPerson = grandTotal / peopleCount
-        
         return amountPerPerson
     }
     
@@ -46,33 +44,85 @@ struct MyWeSplitView: View {
     let borderColor = Color.black
     let borderWidth: CGFloat = 2
     
-    // TODO: entender o problema dos textfields
-    // 1 - Eles nao se formatam quando eu aperto o "Done"
-    // 2 - E eu tenho que fazer com que o usuario digite como se fosse uma mask
-    // igual o banco inter faz
+    // MARK: Symbol and fallback properties
+    let currencySymbol = Locale.current.currency?.identifier ?? "USD"
+    var currencyFallback: String {
+        "\(currencySymbol) 0,00"
+    }
+    var percentageFallback: String  = "0%"
+    
+    // MARK: Formatter for currency mask
+    // Formatter that converts numeric string to currency format
+    func formatAsCurrency(_ value: String) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencySymbol = "\(currencySymbol) "
+        formatter.maximumFractionDigits = 2
+        
+        let numericValue = Double(value) ?? 0.0
+        let formattedAmount = numericValue / 100.0 // Convert centavos to reais
+        return formatter.string(from: NSNumber(value: formattedAmount)) ?? currencyFallback
+    }
+    
+    func formatAsPercent(_ value: String) -> Double {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.maximumFractionDigits = 2
+        
+        let clearedValue = value
+            .replacingOccurrences(of: ",", with: ".")
+            .replacingOccurrences(of: "%", with: "")
+        let numericValue = Double(clearedValue) ?? 0.0
+        let formattedAmount = numericValue / 100.0
+        return formattedAmount
+    }
+    
+    
+    // Clean input to only allow digits
+    func cleanInputCheckAmount(_ value: String) -> String {
+        return value.filter("0123456789".contains)
+    }
+    
+    // TODO: verificar essa lógica, quero deixar que o usuario apenas digite:
+    // uma virgula
+    // dois digitos depois da virgula
+    // e o ultimo texto TEM que ser um %
+    // pensar mais fora da caixa, isso pode ser que nao esteja aqui
+    func cleanInputPercent(_ value: String) -> String {
+        let cleaned = value.filter("0123456789,%".contains)        
+        return cleaned
+    }
     
     var body: some View {
         NavigationStack {
             VStack {
-                
                 VStack (alignment: .leading) {
                     Text("Check Amount")
                         .font(.headline)
-                    TextField("Amount", 
-                              value: $checkAmount,
-                              format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                        .keyboardType(.decimalPad)
-                        .focused($amountIsFocused)
-                        .font(.title)
-                        .toolbar {
-                            ToolbarItem(placement: .keyboard) {
-                                if amountIsFocused {
-                                    Button("Done") {
-                                        amountIsFocused = false
-                                    }
+                    TextField(currencyFallback,
+                              text: $checkAmountText)
+                    .keyboardType(.numberPad)
+                    .focused($checkAmountIsFocused)
+                    .font(.title)
+                    .toolbar {
+                        ToolbarItem(placement: .keyboard) {
+                            if checkAmountIsFocused {
+                                Button("Done") {
+                                    checkAmountIsFocused = false
                                 }
                             }
                         }
+                    }
+                    .onChange(of: checkAmountText) { oldValue, newValue in
+                        let cleanedValue = cleanInputCheckAmount(newValue)
+                        if let cleanedValueDouble = Double(cleanedValue) {
+                            checkAmountText = formatAsCurrency(cleanedValue)
+                            checkAmount = cleanedValueDouble / 100.0
+                        } else {
+                            checkAmountText = ""
+                            checkAmount = 0.0
+                        }
+                    }
                 }
                 .padding()
                 .background(cardBgColor)
@@ -81,9 +131,8 @@ struct MyWeSplitView: View {
                            borderWidth: borderWidth)
                 .padding(.bottom, 20)
                 
-                
                 HStack {
-                    VStack{
+                    VStack {
                         Text("Number of people")
                         
                         Picker("Number of people", selection: $numberOfPeople) {
@@ -105,14 +154,12 @@ struct MyWeSplitView: View {
                     
                     VStack {
                         Text("Tip percentage")
-                        TextField("Tip Percentage",
-                                  value: $tipPercentage,
-                                  format: .percent)
+                        TextField(percentageFallback,
+                                  text: $tipPercentageText)
                         .keyboardType(.decimalPad)
                         .focused($tipPercentageIsFocused)
                         .font(.title2)
                         .toolbar {
-                            
                             ToolbarItem(placement: .keyboard) {
                                 if tipPercentageIsFocused {
                                     Button("Done") {
@@ -121,6 +168,23 @@ struct MyWeSplitView: View {
                                 }
                             }
                         }
+                        .onChange(of: tipPercentageText) { oldValue, newValue in
+                            let cleanedValue = cleanInputPercent(newValue)
+                            tipPercentageText = cleanedValue
+                            tipPercentage = formatAsPercent(cleanedValue)
+                        }
+                        .onChange(of: tipPercentageIsFocused) { oldValue, isFocused in
+                            if isFocused {
+                                if tipPercentageText.hasSuffix("%") {
+                                    tipPercentageText.removeLast()
+                                }
+                            } else {
+                                if !tipPercentageText.isEmpty && !tipPercentageText.hasSuffix("%"){
+                                    tipPercentageText.append("%")
+                                }
+                            }
+                        }
+                        
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 100)
