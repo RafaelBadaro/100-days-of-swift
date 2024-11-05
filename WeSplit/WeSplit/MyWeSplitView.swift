@@ -10,7 +10,7 @@ import SwiftUI
 struct MyWeSplitView: View {
     // MARK: State properties
     @State private var checkAmountText: String = ""
-    @State private var checkAmount = 0.0
+    @State private var checkAmount: Double = 0.0
     @FocusState private var checkAmountIsFocused: Bool
     
     @State private var tipPercentageText: String = ""
@@ -32,7 +32,7 @@ struct MyWeSplitView: View {
     }
     
     var tipAmount: Double {
-        let tipSelection = Double(tipPercentage)
+        let tipSelection = Double(tipPercentage/100)
         let tipAmount = checkAmount * tipSelection
         return tipAmount
     }
@@ -64,17 +64,15 @@ struct MyWeSplitView: View {
         return formatter.string(from: NSNumber(value: formattedAmount)) ?? currencyFallback
     }
     
-    func formatAsPercent(_ value: String) -> Double {
+    func formatAsPercent(_ value: String) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .percent
+        formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         
-        let clearedValue = value
-            .replacingOccurrences(of: ",", with: ".")
-            .replacingOccurrences(of: "%", with: "")
-        let numericValue = Double(clearedValue) ?? 0.0
-        let formattedAmount = numericValue / 100.0
-        return formattedAmount
+        let numericValue = Double(value) ?? 0.0
+        let formattedAmount = numericValue / 10000.0
+        return formatter.string(from: NSNumber(value: formattedAmount)) ?? percentageFallback
     }
     
     
@@ -83,14 +81,9 @@ struct MyWeSplitView: View {
         return value.filter("0123456789".contains)
     }
     
-    // TODO: verificar essa lógica, quero deixar que o usuario apenas digite:
-    // uma virgula
-    // dois digitos depois da virgula
-    // e o ultimo texto TEM que ser um %
-    // pensar mais fora da caixa, isso pode ser que nao esteja aqui
+    // Clean input to only allow digits
     func cleanInputPercent(_ value: String) -> String {
-        let cleaned = value.filter("0123456789,%".contains)        
-        return cleaned
+        return value.filter("0123456789".contains)
     }
     
     var body: some View {
@@ -169,22 +162,23 @@ struct MyWeSplitView: View {
                             }
                         }
                         .onChange(of: tipPercentageText) { oldValue, newValue in
-                            let cleanedValue = cleanInputPercent(newValue)
-                            tipPercentageText = cleanedValue
-                            tipPercentage = formatAsPercent(cleanedValue)
-                        }
-                        .onChange(of: tipPercentageIsFocused) { oldValue, isFocused in
-                            if isFocused {
-                                if tipPercentageText.hasSuffix("%") {
-                                    tipPercentageText.removeLast()
+                            // Removendo a porcentagem %
+                            let oldValueCleaned = oldValue.replacingOccurrences(of: "%", with: "")
+                            let newValueCleaned = newValue.replacingOccurrences(of: "%", with: "")
+                            
+                            let cleanedValue = cleanInputPercent(newValueCleaned)
+                            
+                            if oldValueCleaned != newValueCleaned {
+                                if let cleanedValueDouble = Double(cleanedValue) {
+                                    tipPercentageText = formatAsPercent(cleanedValue)
+                                    tipPercentage = cleanedValueDouble / 100.0
                                 }
-                            } else {
-                                if !tipPercentageText.isEmpty && !tipPercentageText.hasSuffix("%"){
-                                    tipPercentageText.append("%")
+                                else {
+                                    tipPercentageText = ""
+                                    checkAmount = 0.0
                                 }
                             }
                         }
-                        
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 100)
