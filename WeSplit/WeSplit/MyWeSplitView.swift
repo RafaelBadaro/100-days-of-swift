@@ -64,6 +64,8 @@ struct MyWeSplitView: View {
         return formatter.string(from: NSNumber(value: formattedAmount)) ?? currencyFallback
     }
     
+    // TODO: melhoria, nao deixar passar os valores de duas casas, exemplo:
+    // 10,00, se digitar mais um zero, vira 100,00, o "certo" seria ignorar isso e manter como 10,00
     func formatAsPercent(_ value: String) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .percent
