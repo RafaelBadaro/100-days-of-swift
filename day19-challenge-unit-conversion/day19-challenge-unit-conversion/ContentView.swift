@@ -21,7 +21,8 @@
  Volume conversion: users choose milliliters, liters, cups, pints, or gallons.
  */
 
-// MARK: The challange is to choose one set of Units (like temperature for example) and make the converter. I'm gonna challenge myself and make the app convert all of the metrics
+// MARK: The challange is to choose one set of Units (like temperature for example) and make the converter. I'm gonna challenge myself and make the app convert all of the metrics.
+// update 25/11/2025 -> that was cap, did only for temperature
 
 import SwiftUI
 
@@ -32,15 +33,35 @@ enum TemperatureUnit: String, CaseIterable, Identifiable {
     case kelvin = "Kelvin"
     
     var id: String { self.rawValue }
+    
+    func toCelsius(_ value: Double) -> Double {
+        switch self {
+        case .celsius: return value
+        case .fahrenheit: return (value - 32) * 5 / 9
+        case .kelvin: return value - 273.15
+        }
+    }
+    
+    func fromCelsius(_ value: Double) -> Double {
+        switch self {
+        case .celsius: return value
+        case .fahrenheit: return value * 9 / 5 + 32
+        case .kelvin: return value + 273.15
+        }
+    }
+
 }
 
 struct ContentView: View {
     @State private var selectedInputUnit: TemperatureUnit = .celsius
-    
-    var inputUnit: Double = 0
+    @State private var inputUnit: Double = 0
     
     @State private var selectedOutputUnit: TemperatureUnit = .fahrenheit
-    var outputUnit: Double = 0
+    
+    var outputUnit: Double {
+        let celsiusValue = selectedInputUnit.toCelsius(inputUnit)
+        return selectedOutputUnit.fromCelsius(celsiusValue)
+    }
     
     
     var body: some View {
@@ -48,7 +69,6 @@ struct ContentView: View {
             VStack{
                 Text("What do you want to convert?")
                     .font(.headline)
-                //Picker()
             }
            
             
@@ -62,7 +82,12 @@ struct ContentView: View {
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
                 
-                //TextField()
+                TextField("Input",
+                          value: $inputUnit,
+                          format: .number)
+                .textFieldStyle(.roundedBorder)
+                .padding()
+                
             }.background(.brown)
             
             // MARK: OutputUnit Section
@@ -75,7 +100,10 @@ struct ContentView: View {
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
                 
-                //Text()
+                Text("Result: \(outputUnit, specifier: "%.2f")º \(selectedOutputUnit.rawValue)")
+                .textFieldStyle(.roundedBorder)
+                .padding()
+                
             }.background(.yellow)
             
         }
