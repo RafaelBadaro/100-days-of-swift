@@ -1,3 +1,4 @@
+
 //
 //  ContentView.swift
 //  GuessTheFlag
@@ -6,6 +7,11 @@
 //
 
 import SwiftUI
+
+enum GameMode {
+    case standard
+    case deathPick
+}
 
 struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "UK", "Ukraine", "US"].shuffled()
@@ -16,8 +22,12 @@ struct ContentView: View {
     
     @State private var score = 0
     @State private var showEndGame = false
+    @State private var endGameTitle = ""
+    @State private var highScoreDeathPick = 0
     
     let MAX_SCORE = 8
+    
+    @State private var gameMode: GameMode = .standard
     
     var body: some View {
         ZStack {
@@ -33,6 +43,22 @@ struct ContentView: View {
                 Text("Guess the Flag")
                     .font(.largeTitle.weight(.bold))
                     .foregroundStyle(.white)
+                
+                VStack {
+                    Text("Select Game Mode")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                    
+                    Picker("Game Mode", selection: $gameMode) {
+                        Text("Standard").tag(GameMode.standard)
+                        Text("Death pick").tag(GameMode.deathPick)
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: gameMode) {
+                        reset()
+                    }
+                }
+                .padding()
                 
                 VStack(spacing: 15) {
                     VStack {
@@ -67,6 +93,12 @@ struct ContentView: View {
                     .foregroundStyle(.white)
                     .font(.title.bold())
                 
+                if gameMode == .deathPick {
+                    Text("High score: \(highScoreDeathPick)")
+                        .foregroundStyle(.white)
+                        .font(.title.bold())
+                }
+                
                 Spacer()
                 
             }
@@ -75,12 +107,18 @@ struct ContentView: View {
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         }
-        .alert("Max score reached!", isPresented: $showEndGame) {
+        .alert(endGameTitle, isPresented: $showEndGame) {
             Button("Restart Game", action: reset)
+        } message: {
+            if gameMode == .deathPick {
+                Text("Your score: \(score)")
+            } else {
+                Text("") // No message for .standard
+            }
         }
     }
     
-    func reset(){
+    func reset() {
         score = 0
         askQuestion()
     }
@@ -91,6 +129,14 @@ struct ContentView: View {
     }
     
     func flagTapped(_ number: Int) {
+        if gameMode == .standard {
+            standardGame(number)
+        } else if gameMode == .deathPick {
+            deathPickGame(number)
+        }
+    }
+    
+    private func standardGame(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct!"
             score += 1
@@ -99,9 +145,24 @@ struct ContentView: View {
         }
         
         if score == MAX_SCORE {
+            endGameTitle = "Max score reached!"
             showEndGame = true
         } else {
             showingScore = true
+        }
+    }
+    
+    private func deathPickGame(_ number: Int) {
+        if number == correctAnswer {
+            scoreTitle = "Correct!"
+            score += 1
+            if score > highScoreDeathPick {
+                highScoreDeathPick = score
+            }
+            showingScore = true
+        } else {
+            endGameTitle = "Wrong! Game over"
+            showEndGame = true
         }
     }
 }
