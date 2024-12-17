@@ -41,8 +41,9 @@ struct ContentView: View {
                 Spacer()
                 
                 Text("Guess the Flag")
-                    .font(.largeTitle.weight(.bold))
-                    .foregroundStyle(.white)
+                    .largeBlueTitleStyle()
+//                    .font(.largeTitle.weight(.bold))
+//                    .foregroundStyle(.white)
                 
                 VStack {
                     Text("Select Game Mode")
@@ -74,9 +75,7 @@ struct ContentView: View {
                         Button {
                             flagTapped(number)
                         } label: {
-                            Image(countries[number])
-                                .clipShape(.capsule)
-                                .shadow(radius: 5)
+                            FlagImage(contry: countries[number])
                         }
                     }
                 }
@@ -165,6 +164,31 @@ struct ContentView: View {
             showEndGame = true
         }
     }
+}
+
+struct FlagImage: View {
+    var contry: String
+
+    var body: some View {
+        Image(contry)
+            .clipShape(.capsule)
+            .shadow(radius: 5)
+    }
+}
+
+struct LargeBlueTitle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.largeTitle)
+            .foregroundStyle(.blue)
+    }
+}
+
+
+extension View {
+    func largeBlueTitleStyle() -> some View {
+         modifier(LargeBlueTitle())
+     }
 }
 
 #Preview {

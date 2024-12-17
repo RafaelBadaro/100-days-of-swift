@@ -88,6 +88,10 @@ struct MyWeSplitView: View {
         return value.filter("0123456789".contains)
     }
     
+    var isTipPercentageZero: Bool {
+        tipPercentage == 0
+    }
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -198,8 +202,10 @@ struct MyWeSplitView: View {
                 VStack(alignment: .leading) {
                     Text("Grand total")
                         .font(.headline)
+                        .foregroundStyle(isTipPercentageZero ? .red : .primary)
                     Text(grandTotal, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
                         .font(.title)
+                        .foregroundStyle(isTipPercentageZero ? .red : .primary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
