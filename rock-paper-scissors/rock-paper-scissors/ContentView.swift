@@ -10,6 +10,31 @@ import SwiftUI
 struct ContentView: View {
     let possibleMoves = ["🪨", "🧻", "✂️"]
     
+    /**
+     So, if the app chose “Rock” and “Win” the player would need to choose “Paper”, but if the app chose “Rock” and “Lose” the player would need to choose “Scissors”.
+     
+     A ideia é de que, se for pra ganhar ("win") , você deve escolher o que naturalmente escolheria para vencer o elemento escolhido pelo app.
+     
+     E se for pra perder("lose") , tem que escolher o que perderia para  o elemento escolhido pelo app.
+     
+     Casos possíveis ilustrados:
+     
+     
+     (Chat gpt)
+     Se o objetivo é ganhar contra a escolha do app (appsChoice), você deve escolher algo que vença a escolha do app no jogo de pedra, papel e tesoura:
+     
+     "🪨" (Rock): vence "✂️" (Scissors).
+     "🧻" (Paper): vence "🪨" (Rock).
+     "✂️" (Scissors): vence "🧻" (Paper).
+     
+     Se o objetivo é perder, você deve escolher algo que perca para a escolha do app:
+     
+     "🪨" (Rock): perde para "🧻" (Paper).
+     "🧻" (Paper): perde para "✂️" (Scissors).
+     "✂️" (Scissors): perde para "🪨" (Rock).
+     
+     */
+    
     @State private var appsChoice = "🪨"
     @State private var shouldWin = Bool.random()
     @State private var timesPlayed: Int = 0
