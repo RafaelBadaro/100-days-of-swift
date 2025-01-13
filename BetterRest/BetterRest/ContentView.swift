@@ -23,55 +23,66 @@ struct ContentView: View {
         components.minute = 0
         return Calendar.current.date(from: components) ?? .now
     }
-    
+        
     var body: some View {
         NavigationStack {
             Form {
-                VStack (alignment: .leading, spacing: 0) {
-                    Text("When do you want to wake up?")
-                        .font(.headline)
-                    
+                Section (header: Text("When do you want to wake up?")) {
                     DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .hourAndMinute)
                         .labelsHidden()
                 }
+                .headerProminence(.increased)
+                .listRowBackground(Color.clear)
                 
-
-                VStack (alignment: .leading, spacing: 0) {
-                    Text("Desired amount of sleep")
-                        .font(.headline)
-                    
+                Section (header: Text("Desired amount of sleep")) {
                     Stepper("\(sleepAmout.formatted()) hours",
                             value: $sleepAmout,
                             in: 4...12,
                             step: 0.25)
                 }
-                
-                VStack (alignment: .leading, spacing: 0) {
-                    Text("Daily coffee intake")
-                        .font(.headline)
+                .headerProminence(.increased)
+                .listRowBackground(Color.clear)
+
+
+                Section (header: Text("Daily coffee intake")) {
+                    Picker("Number of cups", selection: $coffeeAmount) {
+                        ForEach (0..<21){
+                            Text("^[\($0) cup](inflect: true)")
+                        }
+                    }
+                    .pickerStyle(.automatic)
                     
-                    Stepper("^[\(coffeeAmount) cup](inflect: true)",
-                            value: $coffeeAmount,
-                            in: 1...20)
-                    
-//                    Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups",
+//                    Stepper("^[\(coffeeAmount) cup](inflect: true)",
 //                            value: $coffeeAmount,
 //                            in: 1...20)
+                    //Outra maneira
+                    //Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups",
+                    //value: $coffeeAmount,
+                    //in: 1...20)
                 }
+                .headerProminence(.increased)
+                .listRowBackground(Color.clear)
+                
+                
+                Text("Your ideal bedtime is: \(calculateBedtime())")
+                    .font(.system(size: 25))
+                    .bold()
+                    .listRowBackground(Color.clear)
+                
             }
             .navigationTitle("BetterRest")
-            .toolbar {
-                Button("Calculate", action: calculateBedtime)
-            }
-            .alert(alertTitle, isPresented: $showingAlert) {
-                Button("OK") {}
-            } message: {
-                Text(alertMessage)
-            }
+//            .toolbar {
+//                Button("Calculate", action: calculateBedtime)
+//            }
+//            .alert(alertTitle, isPresented: $showingAlert) {
+//                Button("OK") {}
+//            } message: {
+//                Text(alertMessage)
+//            }
         }
     }
     
-    func calculateBedtime(){
+    func calculateBedtime() -> String {
         do {
             let config = MLModelConfiguration()
             let model = try SleepCalculator(configuration: config)
@@ -89,16 +100,20 @@ struct ContentView: View {
                 coffee: Double(coffeeAmount))
             
             let sleepTime = wakeUp - prediction.actualSleep // in seconds
-            alertTitle = "Your ideal bedtime is..."
-            alertMessage = sleepTime.formatted(date: .omitted, time: .shortened)
+            let formattedSleepTime = sleepTime.formatted(date: .omitted, time: .shortened)
+            return formattedSleepTime
+            //alertTitle = "Your ideal bedtime is..."
+            //alertMessage = sleepTime.formatted(date: .omitted, time: .shortened)
         }
         catch {
-            alertTitle = "Error"
-            alertMessage = "Sorry, there was a problema calculation your bedtime."
+            //alertTitle = "Error"
+            //alertMessage = "Sorry, there was a problema calculation your bedtime."
         }
         
-        showingAlert = true
+        //showingAlert = true
+        return "Error"
     }
+    
 }
 
 #Preview {
