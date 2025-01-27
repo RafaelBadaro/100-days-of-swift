@@ -29,6 +29,9 @@ struct ContentView: View {
     
     @State private var gameMode: GameMode = .standard
     
+    @State private var animationAmount = [0.0, 0.0, 0.0]
+    @State private var selectedFlag: Int? = nil
+    
     var body: some View {
         ZStack {
             RadialGradient(stops: [
@@ -42,8 +45,8 @@ struct ContentView: View {
                 
                 Text("Guess the Flag")
                     .largeBlueTitleStyle()
-//                    .font(.largeTitle.weight(.bold))
-//                    .foregroundStyle(.white)
+                //                    .font(.largeTitle.weight(.bold))
+                //                    .foregroundStyle(.white)
                 
                 VStack {
                     Text("Select Game Mode")
@@ -73,10 +76,25 @@ struct ContentView: View {
                     
                     ForEach(0..<3) { number in
                         Button {
-                            flagTapped(number)
+                            withAnimation {
+                                // Set the selected flag
+                                selectedFlag = number
+                                // Update animation only for tapped flag
+                                animationAmount[number] += 360
+                                
+                                flagTapped(number)
+                            }
                         } label: {
                             FlagImage(contry: countries[number])
+                                .rotation3DEffect(
+                                    .degrees(animationAmount[number]),
+                                    axis: (x: 0, y: 1, z: 0)
+                                )
+                                // Ajusta a opacidade
+                                .opacity(selectedFlag == nil || selectedFlag == number ? 1.0 : 0.25)
+                                .scaleEffect(selectedFlag == nil || selectedFlag == number ? 1.0 : 0.75) // Ajusta o tamanho
                         }
+                        
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -125,6 +143,7 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        selectedFlag = nil
     }
     
     func flagTapped(_ number: Int) {
@@ -168,7 +187,7 @@ struct ContentView: View {
 
 struct FlagImage: View {
     var contry: String
-
+    
     var body: some View {
         Image(contry)
             .clipShape(.capsule)
@@ -187,8 +206,8 @@ struct LargeBlueTitle: ViewModifier {
 
 extension View {
     func largeBlueTitleStyle() -> some View {
-         modifier(LargeBlueTitle())
-     }
+        modifier(LargeBlueTitle())
+    }
 }
 
 #Preview {
