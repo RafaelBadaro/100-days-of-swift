@@ -30,7 +30,7 @@ struct ContentView: View {
     
     @State private var score = 0
     
-    @State private var currentAnswer: Int = 0
+    @State private var currentAnswer: Int? = nil
     
     @State private var questions: [Question] = []
     
@@ -104,6 +104,7 @@ struct ContentView: View {
                                 Text("Next question")
                                     .font(.title)
                             }
+                            .disabled(currentAnswer == nil)
                             .padding()
                             .buttonStyle(.borderedProminent)
                             
@@ -145,7 +146,7 @@ struct ContentView: View {
         numberOfQuestions = 5
         
         score = 0
-        currentAnswer = 0
+        currentAnswer = nil
 
         questions.removeAll()
         currentQuestionNumber = 0
@@ -169,7 +170,7 @@ struct ContentView: View {
         
         checkScore()
         
-        currentAnswer = 0
+        currentAnswer = nil
         
         if currentQuestionNumber < numberOfQuestions - 1 {
             currentQuestionNumber += 1
