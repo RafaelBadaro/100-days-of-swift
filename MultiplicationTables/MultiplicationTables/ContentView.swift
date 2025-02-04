@@ -7,6 +7,20 @@
 
 import SwiftUI
 
+struct Question {
+    let randomUpToNumber: Int
+    let fixed1to10Number: Int
+    let correctAnswer: Int
+    let questionText: String
+    
+    init(randomUpToNumber: Int, fixed1to10Number: Int) {
+        self.randomUpToNumber = randomUpToNumber
+        self.fixed1to10Number = fixed1to10Number
+        self.correctAnswer = randomUpToNumber * fixed1to10Number
+        self.questionText = "Whats \(randomUpToNumber) x \(fixed1to10Number)?"
+    }
+}
+
 struct ContentView: View {
     
     @State private var isAskingForSettings = true
@@ -18,11 +32,17 @@ struct ContentView: View {
     
     @State private var currentAnswer: Int = 0
     
+    @State private var questions: [Question] = []
+    
+    @State private var currentQuestionNumber = 0
+    
+    @State private var isGameOver = false
+
     var body: some View {
         NavigationStack {
             VStack {
                 if isAskingForSettings {
-                    Section("Up to which number you want to practice?") {
+                    Section("Up to which multiplication tables you want practice?") {
                         Stepper("Up to \(upToNumber)",
                                 value: $upToNumber, in: 1...10)
                     }
@@ -40,7 +60,7 @@ struct ContentView: View {
                     .padding(.bottom)
                     
                     Button {
-                        isAskingForSettings.toggle()
+                        startGame()
                     } label: {
                         Text("Start!")
                             .font(.title)
@@ -49,19 +69,48 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     
                 } else {
-                    //TODO: finalizar essa logica
-                    VStack{
-                        Text("Question #1")
-                            .font(.title)
-                        Text("What is \(Int.random(in: 1...upToNumber))?")
-                            .font(.headline)
+                    
+                    VStack {
                         
-                        TextField("Answer",
-                                  value: $currentAnswer,
-                                  format: .number)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numberPad)
+                        if isGameOver {
+                            Text("Game over! Your score: \(score)!")
+                                .font(.title)
+                            
+                            Button {
+                                restartGame()
+                            } label: {
+                                Text("Play again?")
+                                    .font(.title)
+                            }
+                            .padding()
+                            .buttonStyle(.borderedProminent)
+                            
+                        } else {
+                            Text("Question #\(currentQuestionNumber + 1)")
+                                .font(.title)
+                            
+                            Text("\(questions[currentQuestionNumber].questionText)")
+                                .font(.headline)
+                            
+                            TextField("Answer",
+                                      value: $currentAnswer,
+                                      format: .number)
+                            .textFieldStyle(.roundedBorder)
+                            .keyboardType(.numberPad)
+                            
+                            Button {
+                                goToNextQuestion()
+                            } label: {
+                                Text("Next question")
+                                    .font(.title)
+                            }
+                            .padding()
+                            .buttonStyle(.borderedProminent)
+                            
+                        }
+                        
                     }
+                    
                     
                 }
                 
@@ -72,18 +121,70 @@ struct ContentView: View {
                 if !isAskingForSettings {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            isAskingForSettings.toggle()
+                            restartGame()
                         } label: {
                             Text("Restart")
                         }
                     }
                 }
-
+                
             }
         }
-
-        
     }
+    
+    func startGame(){
+        generateQuestions()
+        isAskingForSettings = false
+    }
+    
+    // TODO: ver com gpt se existe uma maneira de tipo "resetar" as variaveis de uma view pro estado inicial, sem ter que setar na mão uma por uma
+    func restartGame(){
+       
+        isAskingForSettings = true
+        upToNumber = 1
+        numberOfQuestions = 5
+        
+        score = 0
+        currentAnswer = 0
+
+        questions.removeAll()
+        currentQuestionNumber = 0
+
+        isGameOver = false
+    }
+    
+    func generateQuestions(){
+        for _ in 0..<numberOfQuestions{
+            let randomUpToNumber = Int.random(in: 1...upToNumber)
+            let fixed1to10Number = Int.random(in: 1...10)
+            questions.append(
+                Question(randomUpToNumber: randomUpToNumber,
+                         fixed1to10Number: fixed1to10Number)
+            )
+        }
+    }
+    
+    
+    func goToNextQuestion(){
+        
+        checkScore()
+        
+        currentAnswer = 0
+        
+        if currentQuestionNumber < numberOfQuestions - 1 {
+            currentQuestionNumber += 1
+            return
+        }
+        
+        isGameOver = true
+    }
+    
+    func checkScore() {
+        if currentAnswer == questions[currentQuestionNumber].correctAnswer {
+            score += 1
+        }
+    }
+    
 }
 
 #Preview {
