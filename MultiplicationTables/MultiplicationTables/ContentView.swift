@@ -119,7 +119,7 @@ struct ContentView: View {
             .navigationTitle("Multiplication Tables :)")
             .padding()
             .toolbar {
-                if !isAskingForSettings {
+                if !isAskingForSettings && !isGameOver {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             restartGame()
