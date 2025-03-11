@@ -15,59 +15,131 @@ struct ContentView: View {
     
     let missions: [Mission] = Bundle.main.decode("missions.json")
     
-    let columns = [
-        GridItem(.adaptive(minimum: 150))
-    ]
+    @State private var showingGrid = true
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVGrid (columns: columns) {
-                    ForEach(missions) { mission in
-                        NavigationLink {
-                            MissionView(mission: mission,
-                                        astronauts: astronauts)
-                        } label : {
-                            VStack {
-                                Image(mission.image)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 100, height: 100)
-                                    .padding()
-                                
-                                VStack {
-                                    Text(mission.displayName)
-                                        .font(.headline)
-                                        .foregroundStyle(.white)
-                                    
-                                    Text(mission.formattedLaunchDate)
-                                        .font(.caption)
-                                        .foregroundStyle(.gray)
-                                }
-                                .padding(.vertical)
-                                .frame(maxWidth: .infinity)
-                                .background(.lightBackground)
-                            }
-                            .clipShape(.rect(cornerRadius: 10))
-                            .overlay (
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(.lightBackground)
-                            )
-                        }
-                    }
+            Group {
+                if showingGrid {
+                    GridLayout(missions: missions, astronauts: astronauts)
+                } else {
+                    ListLayout(missions: missions, astronauts: astronauts)
                 }
-                .padding([.horizontal, .bottom])
-                
             }
             .navigationTitle("Moonshot")
             .background(.darkBackground)
             .preferredColorScheme(.dark)
+            .toolbar {
+                ToolbarItem {
+                    Toggle(isOn: $showingGrid) {
+                        Text(showingGrid ? "List" : "Grid") // Atualiza o texto com base no estado
+                            .font(.headline) // Ajuste de estilo do texto, se necessário
+                    }
+                    .toggleStyle(.button) // Estilo personalizado (opcional)
+                }
+            }
+
         }
     }
 }
 
 #Preview {
     ContentView()
+}
+
+struct GridLayout: View {
+    let columns = [
+        GridItem(.adaptive(minimum: 150))
+    ]
+    
+    var missions: [Mission]
+    var astronauts: [String: Astronaut]
+    
+    var body: some View {
+        ScrollView {
+            LazyVGrid (columns: columns) {
+                ForEach(missions) { mission in
+                    NavigationLink {
+                        MissionView(mission: mission,
+                                    astronauts: astronauts)
+                    } label : {
+                        MissionLabelView(mission: mission)
+                    }
+                }
+            }
+            .padding([.horizontal, .bottom])
+        }
+    }
+}
+
+struct ListLayout: View {
+    var missions: [Mission]
+    var astronauts: [String: Astronaut]
+    
+    var body: some View {
+        List {
+            ForEach(missions) { mission in
+                
+                ZStack {
+                    NavigationLink(destination: MissionView(mission: mission, astronauts: astronauts)) {
+                        EmptyView() // Mantém a navegação funcional, mas sem o chevron
+                    }
+                    .opacity(0) // Torna invisível, mas ainda funcional
+                    
+                    MissionLabelView(mission: mission) // A view visível
+                }
+                .listRowBackground(Color.darkBackground)
+                .listRowSeparator(.hidden)
+                
+                // Codigo de antes, porém com chevron chato na direita, deixando só por referencia
+                 /*
+                  NavigationLink {
+                      MissionView(mission: mission,
+                                  astronauts: astronauts)
+                  } label : {
+                      MissionLabelView(mission: mission)
+                  }
+                  .listRowBackground(Color.darkBackground)
+                  .listRowSeparator(.hidden)
+                  */
+                
+                
+            }
+        }
+        .listStyle(.plain)
+    }
+}
+
+struct MissionLabelView: View {
+    var mission: Mission
+    
+    var body: some View {
+        VStack {
+            Image(mission.image)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+                .padding()
+            
+            VStack {
+                Text(mission.displayName)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                
+                Text(mission.formattedLaunchDate)
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+            }
+            .padding(.vertical)
+            .frame(maxWidth: .infinity)
+            .background(.lightBackground)
+        }
+        .clipShape(.rect(cornerRadius: 10))
+        .overlay (
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(.lightBackground)
+        )
+    }
 }
 
 /*

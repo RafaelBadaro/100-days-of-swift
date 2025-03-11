@@ -19,7 +19,8 @@ struct MissionView: View {
     var body: some View {
         ScrollView {
             VStack {
-                MissionImage(image: mission.image)
+                MissionImage(image: mission.image,
+                             launchDate: mission.launchDate?.formatted(date: .abbreviated, time: .omitted) ?? "")
                 
                 DividerView()
                 
@@ -60,14 +61,22 @@ struct MissionView: View {
 
 struct MissionImage: View {
     var image: String
+    var launchDate: String
     
     var body: some View {
-        Image(image)
-            .resizable()
-            .scaledToFit()
-            .containerRelativeFrame(.horizontal) { width, axis in
-                width * 0.6
+        VStack {
+            Image(image)
+                .resizable()
+                .scaledToFit()
+                .containerRelativeFrame(.horizontal) { width, axis in
+                    width * 0.6
+                }
+            
+            if !launchDate.isEmpty {
+                Text(launchDate)
+                    .padding(.top, 20)
             }
+        }
     }
 }
 
