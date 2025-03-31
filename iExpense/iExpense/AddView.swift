@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var name = ""
+    @State private var name = "New Expense"
     @State private var type = "Personal"
     @State private var amount = 0.0
     
@@ -21,7 +21,7 @@ struct AddView: View {
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Name", text: $name)
+                //TextField("Name", text: $name)
                 
                 Picker("Type", selection: $type){
                     ForEach(types, id: \.self){
@@ -34,16 +34,36 @@ struct AddView: View {
                     .keyboardType(.decimalPad)
                 
             }
-            .navigationTitle("Add new expense")
+            .navigationTitle($name)
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden()
+            //.navigationTitle("Add new expense")
             .toolbar {
-                Button("Save") {
-                    let item = ExpenseItem(name: name,
-                                           type: type,
-                                           amount: amount)
-                    expenses.items.append(item)
-                    dismiss()
+                // Usando ToolbarItem da pra escolher onde as coisas vao ficar
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.red)
+                }
+            
+                ToolbarItem (placement: .confirmationAction) {
+                    Button("Save") {
+                        let item = ExpenseItem(name: name, type: type, amount: amount)
+                        expenses.items.append(item)
+                        dismiss()
+                    }
                 }
             }
+//            .toolbar {
+//                Button("Save") {
+//                    let item = ExpenseItem(name: name,
+//                                           type: type,
+//                                           amount: amount)
+//                    expenses.items.append(item)
+//                    dismiss()
+//                }
+//            }
         }
     }
 }

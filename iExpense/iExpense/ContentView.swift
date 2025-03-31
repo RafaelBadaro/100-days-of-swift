@@ -8,7 +8,7 @@
 
 import SwiftUI
 import Observation
-
+ 
 struct AmountStyleModifier: ViewModifier {
     var amount: Double
     
@@ -86,7 +86,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                
                 Section("Personal") {
                     ForEach(personalExpenses) { item in
                         HStack {
@@ -132,14 +131,14 @@ struct ContentView: View {
                        }
                    }
                 
-                Button("Add Expense", systemImage: "plus") {
-                    showingAddExpense = true
+                NavigationLink(destination: AddView(expenses: expenses, prefferedCurrency: prefferedCurrency)) {
+                    Label("Add Expense", systemImage: "plus")
                 }
             }
-            .sheet(isPresented: $showingAddExpense) {
-                AddView(expenses: expenses,
-                        prefferedCurrency: prefferedCurrency)
-            }
+//            .sheet(isPresented: $showingAddExpense) {
+//                AddView(expenses: expenses,
+//                        prefferedCurrency: prefferedCurrency)
+//            }
         }
         
     }
