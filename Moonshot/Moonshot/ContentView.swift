@@ -38,6 +38,10 @@ struct ContentView: View {
                     .toggleStyle(.button) // Estilo personalizado (opcional)
                 }
             }
+            .navigationDestination(for: Mission.self) { mission in
+                           MissionView(mission: mission, astronauts: astronauts)
+
+            }
 
         }
     }
@@ -59,12 +63,15 @@ struct GridLayout: View {
         ScrollView {
             LazyVGrid (columns: columns) {
                 ForEach(missions) { mission in
-                    NavigationLink {
-                        MissionView(mission: mission,
-                                    astronauts: astronauts)
-                    } label : {
+                    NavigationLink(value: mission) {
                         MissionLabelView(mission: mission)
                     }
+//                    NavigationLink {
+//                        MissionView(mission: mission,
+//                                    astronauts: astronauts)
+//                    } label : {
+//                        MissionLabelView(mission: mission)
+//                    }
                 }
             }
             .padding([.horizontal, .bottom])
