@@ -8,10 +8,6 @@
 import SwiftUI
 import Observation
 
-// TODOS:
-// Criar classe para segurar lista de activities pra salvar no user defaults com codable
-// Criar visualizacao de add/edit (que vai receber ou nao uma activity, vai ter o dismiss e vai receber a lista de activities pra alterar ela)
-
 struct ActivityItem: Identifiable, Codable {
     var id = UUID()
     var title: String
@@ -21,9 +17,21 @@ struct ActivityItem: Identifiable, Codable {
 
 @Observable
 class Activities {
-    var items: [ActivityItem]
+    var items = [ActivityItem]() {
+        didSet {
+            if let encoded = try? JSONEncoder().encode(items) {
+                UserDefaults.standard.set(encoded, forKey: "Items")
+            }
+        }
+    }
     
     init() {
+        if let savedItems = UserDefaults.standard.data(forKey: "Items") {
+            if let decodedItems = try? JSONDecoder().decode([ActivityItem].self, from: savedItems) {
+                items = decodedItems
+                return
+            }
+        }
         items = []
     }
 }
@@ -35,20 +43,11 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(activities.items) { activity in
-                    HStack {
-                        VStack (alignment: .leading) {
-                            Text(activity.title)
-                                .font(.headline)
-                                .foregroundStyle(.primary)
-                            Text(activity.description)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        
-                        Spacer()
-                        
-                        Text("Completions: \(activity.completionCount)")
+                ForEach($activities.items) { $activity in
+                    NavigationLink(destination: DetailActivityView(activityItem: $activity)) {
+                        Text(activity.title)
+                            .font(.headline)
+                            .foregroundStyle(.primary)
                     }
                 }
                 .onDelete(perform: deleteActivity)
