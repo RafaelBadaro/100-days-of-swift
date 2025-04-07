@@ -8,7 +8,7 @@
 import SwiftUI
 import Observation
 
-struct ActivityItem: Identifiable, Codable {
+struct ActivityItem: Identifiable, Codable, Equatable {
     var id = UUID()
     var title: String
     var description: String
@@ -43,14 +43,25 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach($activities.items) { $activity in
-                    NavigationLink(destination: DetailActivityView(activityItem: $activity)) {
+                // MARK: Sem usar binding
+                ForEach(activities.items) { activity in
+                    NavigationLink(destination: DetailActivityView(activityItem: activity, activities: activities)) {
                         Text(activity.title)
                             .font(.headline)
                             .foregroundStyle(.primary)
                     }
                 }
                 .onDelete(perform: deleteActivity)
+                
+                  // MARK: Usando binding
+//                ForEach($activities.items) { $activity in
+//                    NavigationLink(destination: DetailActivityView(activityItem: $activity)) {
+//                        Text(activity.title)
+//                            .font(.headline)
+//                            .foregroundStyle(.primary)
+//                    }
+//                }
+//                .onDelete(perform: deleteActivity)
             }
             .navigationTitle("Activities")
             .toolbar {
