@@ -6,7 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5357CF492DADCCAE00B5AABE /* Order.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5357CF482DADCCAE00B5AABE /* Order.swift */; };
+		5357CF4B2DADCF8C00B5AABE /* AddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5357CF4A2DADCF8C00B5AABE /* AddressView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		5357CF482DADCCAE00B5AABE /* Order.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Order.swift; sourceTree = "<group>"; };
+		5357CF4A2DADCF8C00B5AABE /* AddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressView.swift; sourceTree = "<group>"; };
 		536040412DA7258E008D4E69 /* CupcakeCorner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CupcakeCorner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -32,6 +39,8 @@
 		536040382DA7258E008D4E69 = {
 			isa = PBXGroup;
 			children = (
+				5357CF4A2DADCF8C00B5AABE /* AddressView.swift */,
+				5357CF482DADCCAE00B5AABE /* Order.swift */,
 				536040432DA7258E008D4E69 /* CupcakeCorner */,
 				536040422DA7258E008D4E69 /* Products */,
 			);
@@ -119,6 +128,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5357CF492DADCCAE00B5AABE /* Order.swift in Sources */,
+				5357CF4B2DADCF8C00B5AABE /* AddressView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
