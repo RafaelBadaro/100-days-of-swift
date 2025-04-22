@@ -12,8 +12,9 @@ struct CheckoutView: View {
     private let urlString = "https://hws.dev/img/cupcakes@3x.jpg"
     var order: Order
     
-    @State private var confirmationMessage: String = ""
-    @State private var showingConfirmation: Bool = false
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    @State private var showingAlert: Bool = false
 
     var body: some View {
         ScrollView {
@@ -41,10 +42,13 @@ struct CheckoutView: View {
         .navigationTitle("Check out")
         .navigationBarTitleDisplayMode(.inline)
         .scrollBounceBehavior(.basedOnSize)
-        .alert("Thank you!", isPresented: $showingConfirmation) {
+        .alert(alertTitle, isPresented: $showingAlert) {
             Button("OK") { }
         } message: {
-            Text(confirmationMessage)
+            Text(alertMessage)
+        }
+        .onAppear {
+            order.saveAddressToUserDefaults()
         }
     }
     
@@ -64,13 +68,23 @@ struct CheckoutView: View {
             
             // handle our result
             let decodedOrder = try JSONDecoder().decode(Order.self, from: data)
-            confirmationMessage = "Your order for \(decodedOrder.quantity)x \(Order.types[decodedOrder.type].lowercased()) cupcakes is on its way!"
-            showingConfirmation = true
+            self.setupAlertTexts(title: "Thank you!",
+                                 message: "Your order for \(decodedOrder.quantity)x \(Order.types[decodedOrder.type].lowercased()) cupcakes is on its way!")
         } catch {
             print("Checkout failed: \(error.localizedDescription)")
+            self.setupAlertTexts(title: "Checkout failed :(",
+                                 message:
+                                    "Error: \(error.localizedDescription)")
         }
+        
+        
     }
     
+    func setupAlertTexts(title: String, message: String){
+        self.alertTitle = title
+        self.alertMessage = message
+        self.showingAlert = true
+    }
 }
 
 #Preview {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Observation
 
 @Observable
 class Order: Codable {
@@ -44,10 +45,30 @@ class Order: Codable {
     var zip = ""
     
     var hasValidAddress: Bool {
-        if name.isEmpty || streetAddress.isEmpty || city.isEmpty || zip.isEmpty {
-            return false
-        }
-        return true
+        return self.propertiesNotEmpty() && self.propertiesNotWhitespace()
+    }
+    
+    private func propertiesNotEmpty() -> Bool {
+        return !name.isEmpty
+        && !streetAddress.isEmpty
+        && !city.isEmpty
+        && !zip.isEmpty
+    }
+    
+    //MARK: Minhas solucao, com o allSatisfy
+    private func propertiesNotWhitespace() -> Bool {
+        return !name.allSatisfy { $0.isWhitespace }
+        && !streetAddress.allSatisfy { $0.isWhitespace }
+        && !city.allSatisfy { $0.isWhitespace }
+        && !zip.allSatisfy { $0.isWhitespace }
+    }
+    
+    //MARK: GPT + stackoverflow a titulo de curiosidade, sugeriram o trimmingCharacters
+    private func propertiesNotWhitespaceTrimming() -> Bool {
+        return !name.trimmingCharacters(in: .whitespaces).isEmpty
+        && !streetAddress.trimmingCharacters(in: .whitespaces).isEmpty
+        && !city.trimmingCharacters(in: .whitespaces).isEmpty
+        && !zip.trimmingCharacters(in: .whitespaces).isEmpty
     }
     
     var cost: Decimal {
@@ -68,5 +89,12 @@ class Order: Codable {
         }
         
         return cost
+    }
+    
+    func saveAddressToUserDefaults() {
+        UserDefaults.standard.set(name, forKey: "name")
+        UserDefaults.standard.set(streetAddress, forKey: "streetAddress")
+        UserDefaults.standard.set(city, forKey: "city")
+        UserDefaults.standard.set(zip, forKey: "zip")
     }
 }

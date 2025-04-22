@@ -28,6 +28,16 @@ struct AddressView: View {
         }
         .navigationTitle("Delivery details")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            self.getAddressFromUserDefaultIfExists()
+        }
+    }
+    
+    func getAddressFromUserDefaultIfExists() {
+        self.order.name = UserDefaults.standard.string(forKey: "name") ?? ""
+        self.order.streetAddress = UserDefaults.standard.string(forKey: "streetAddress") ?? ""
+        self.order.city = UserDefaults.standard.string(forKey: "city") ?? ""
+        self.order.zip = UserDefaults.standard.string(forKey: "zip") ?? ""
     }
 }
 
