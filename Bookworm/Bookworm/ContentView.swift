@@ -35,7 +35,10 @@ struct ContentView: View {
                             }
                         }
                     }
-                }.onDelete(perform: deleteBooks)
+                    .listRowBackground(book.rating <= 1 ?
+                                       Color.red.opacity(0.6) : Color(UIColor.systemBackground))
+                }
+                .onDelete(perform: deleteBooks)
             }
             .navigationTitle("Bookworm")
             .navigationDestination(for: Book.self) { book in

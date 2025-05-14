@@ -17,6 +17,10 @@ struct AddBookView: View {
     @State private var review = ""
     @State private var rating = 3
     
+    private var isFormValid: Bool {
+        return self.propertiesNotEmpty() && self.propertiesNotWhiteSpaces()
+    }
+    
     let genres = ["Fantasy", "Horror", "Kids", "Mystery", "Poetry", "Romance", "Thriller"]
     
     var body: some View {
@@ -45,10 +49,21 @@ struct AddBookView: View {
                         modelContext.insert(newBook)
                         dismiss()
                     }
+                    .disabled(!isFormValid)
                 }
             }
             .navigationTitle("Add Book")
         }
+    }
+    
+    private func propertiesNotEmpty() -> Bool {
+        return !title.isEmpty && !author.isEmpty && !review.isEmpty
+    }
+    
+    private func propertiesNotWhiteSpaces() -> Bool {
+        return !title.trimmingCharacters(in: .whitespaces).isEmpty &&
+        !author.trimmingCharacters(in: .whitespaces).isEmpty &&
+        !review.trimmingCharacters(in: .whitespaces).isEmpty
     }
 }
 
