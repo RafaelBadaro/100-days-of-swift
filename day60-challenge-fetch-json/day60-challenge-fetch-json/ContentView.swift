@@ -12,8 +12,20 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            List(dataManager.users, id: \.id) { user in
-                Text(user.name)
+            List(dataManager.users) { user in
+                NavigationLink(value: user) {
+                    HStack {
+                        Text(user.name)
+                            .font(.headline)
+                        Spacer()
+                        Text(user.isActive ? "Active" : "Inactive")
+                            .foregroundStyle(user.isActive ? .green : .red)
+                    }
+                }
+            }
+            .navigationTitle("Users")
+            .navigationDestination(for: User.self) { user in
+                DetailView(user: user)
             }
         }
         .onAppear {
