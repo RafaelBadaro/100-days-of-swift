@@ -8,14 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var dataManager = DataManager()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List(dataManager.users, id: \.id) { user in
+                Text(user.name)
+            }
         }
-        .padding()
+        .onAppear {
+            Task {
+                await dataManager.fetchUsers()
+            }
+        }
     }
 }
 
