@@ -37,6 +37,6 @@ struct DetailView: View {
     }
 }
 
-#Preview {
-    DetailView(user: User.sampleData[0])
-}
+//#Preview {
+//    DetailView(user: User.sampleData[0])
+//}

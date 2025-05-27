@@ -7,18 +7,14 @@
 
 import Foundation
 import Observation
+import SwiftData
+import SwiftUICore
 
 @Observable
 class DataManager {
-    
     private static let JSONURL = URL(string: "https://www.hackingwithswift.com/samples/friendface.json")!
-    
-    var users: [User] = []
-    
-    func fetchUsers() async {
-        // Se ja tiver users, só retorna porque users não é empty
-        guard users.isEmpty else { return }
         
+    func fetchUsers() async -> [User] {
         do {
             let (data, _) = try await URLSession.shared.data(from: Self.JSONURL)
             
@@ -29,10 +25,11 @@ class DataManager {
             
             let decodedUsers = try decoder.decode([User].self, from: data)
             
-            self.users = decodedUsers
+            return decodedUsers
         } catch {
             print("Deu erro: \(error.localizedDescription)")
         }
-        
+    
+        return []
     }
 }

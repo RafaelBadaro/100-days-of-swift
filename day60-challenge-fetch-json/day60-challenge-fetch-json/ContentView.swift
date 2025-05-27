@@ -6,13 +6,17 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
-    @State private var dataManager = DataManager()
+    @Environment(\.modelContext) var modelContext
+    private var dataManager = DataManager()
+    
+    @Query var users: [User]
     
     var body: some View {
         NavigationStack {
-            List(dataManager.users) { user in
+            List(users) { user in
                 NavigationLink(value: user) {
                     HStack {
                         Text(user.name)
@@ -29,8 +33,13 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            Task {
-                await dataManager.fetchUsers()
+            if users.isEmpty {
+                Task {
+                    let fetchedUsers = await dataManager.fetchUsers()
+                    for fetchedUser in fetchedUsers {
+                        modelContext.insert(fetchedUser)
+                    }
+                }
             }
         }
     }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct day60_challenge_fetch_jsonApp: App {
@@ -13,5 +14,6 @@ struct day60_challenge_fetch_jsonApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: User.self)
     }
 }
