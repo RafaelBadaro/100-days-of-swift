@@ -6,14 +6,11 @@
 //
 
 import Foundation
-import Observation
-import SwiftData
-import SwiftUICore
 
-@Observable
 class DataManager {
     private static let JSONURL = URL(string: "https://www.hackingwithswift.com/samples/friendface.json")!
         
+    @MainActor
     func fetchUsers() async -> [User] {
         do {
             let (data, _) = try await URLSession.shared.data(from: Self.JSONURL)

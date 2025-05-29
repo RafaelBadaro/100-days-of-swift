@@ -34,7 +34,7 @@ struct ContentView: View {
         }
         .onAppear {
             if users.isEmpty {
-                Task {
+                Task { @MainActor in
                     let fetchedUsers = await dataManager.fetchUsers()
                     for fetchedUser in fetchedUsers {
                         modelContext.insert(fetchedUser)
