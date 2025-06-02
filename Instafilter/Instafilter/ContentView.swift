@@ -6,21 +6,24 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ContentView: View {
+    @State private var pickerItem: PhotosPickerItem?
+    @State private var selectedImage: Image?
+    
     var body: some View {
-//        ContentUnavailableView("No snippets",
-//                               systemImage: "swift",
-//        description: Text("You don't have any saved snippets yet"))
-        ContentUnavailableView {
-            Label("No snippets",  systemImage: "swift")
-        } description: {
-            Text("You don't have any saved snippets yet")
-        } actions: {
-            Button("Create snippets") {
+        VStack {
+            PhotosPicker("Select a picture", selection: $pickerItem, matching: .images)
                 
+            selectedImage?
+                .resizable()
+                .scaledToFit()
+        }
+        .onChange(of: pickerItem) {
+            Task {
+                selectedImage = try await pickerItem?.loadTransferable(type: Image.self)
             }
-            .buttonStyle(.borderedProminent)
         }
     }
 
