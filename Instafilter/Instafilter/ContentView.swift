@@ -14,10 +14,13 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            PhotosPicker("Select a picture",
-                         selection: $pickerItems,
+            PhotosPicker(selection: $pickerItems,
                          maxSelectionCount: 3,
-                         matching: .images)
+                         matching: .any(of:
+                                            [.images, .not(.screenshots)]
+                                       )) {
+                             Label("Select a picture", systemImage: "photo")
+                         }
             
             ScrollView {
                 ForEach(0..<selectedImages.count, id: \.self) { i in
