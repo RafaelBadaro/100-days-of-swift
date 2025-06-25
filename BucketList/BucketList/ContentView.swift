@@ -18,6 +18,7 @@ struct ContentView: View {
     )
     
     @State private var viewModel = ViewModel()
+    @State private var isMapStyleStandard = true
     
     var body: some View {
         if viewModel.isUnlocked {
@@ -44,6 +45,24 @@ struct ContentView: View {
                         }
                     }
                 }
+                .mapStyle(isMapStyleStandard ? .standard : .hybrid)
+                .safeAreaInset(edge: .bottom) {
+                    HStack {
+                        Spacer()
+                        
+                        Button() {
+                            isMapStyleStandard.toggle()
+                        } label: {
+                            Text(isMapStyleStandard ? "Show Hybrid" : "Show Standard")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .padding()
+                        
+                        Spacer()
+                    }
+                    .background(.ultraThinMaterial)
+                }
+               
                 .onTapGesture { position in
                     if let coordinate = proxy.convert(position, from: .local) {
                         viewModel.addLocation(at: coordinate)
@@ -55,6 +74,7 @@ struct ContentView: View {
                     }
                 }
             }
+   
         } else {
             Button("Unlock places", action: viewModel.authenticate)
                 .padding()
