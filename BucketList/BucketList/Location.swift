@@ -9,7 +9,7 @@ import Foundation
 import MapKit
 
 struct Location : Codable, Equatable, Identifiable {
-    var id: UUID // Tem que ser colocado como "var" porque o 
+    var id: UUID // Tem que ser colocado como "var" porque ele vai ser trocado na EditView
     var name: String
     var description: String
     var latitude: Double
