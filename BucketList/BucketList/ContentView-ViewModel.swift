@@ -15,7 +15,8 @@ extension ContentView {
     class ViewModel {
         private(set) var locations: [Location]
         var selectedPlace: Location?
-        var isUnlocked = true
+        var isUnlocked = false
+        var showBiometricErrorAlert = false
         
         let savePath = URL.documentsDirectory.appending(path: "SavedPlaces")
         
@@ -69,6 +70,7 @@ extension ContentView {
                         self.isUnlocked = true
                     } else {
                         // biometric error
+                        self.showBiometricErrorAlert = true
                     }
                 }
             } else {

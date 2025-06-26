@@ -81,6 +81,9 @@ struct ContentView: View {
                 .background(.blue)
                 .foregroundStyle(.white)
                 .clipShape(.capsule)
+                .alert("Authentication Failed :(", isPresented: $viewModel.showBiometricErrorAlert) {
+                    Button("OK", role: .cancel) { }
+                }
         }
     }
     
