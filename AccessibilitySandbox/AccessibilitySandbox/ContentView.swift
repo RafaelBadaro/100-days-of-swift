@@ -8,6 +8,62 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    var body: some View {
+        VStack {
+            Text("Your score is")
+            
+            Text("1000")
+                .font(.title)
+        }
+        .accessibilityElement()
+        .accessibilityLabel("Your score is 1000")
+        
+    }
+}
+
+#Preview {
+    ContentView()
+}
+
+/**
+ 
+ 
+Aula 3:
+ 
+------------
+Aula 2:
+ 
+ VStack {
+     Text("Your score is")
+     
+     Text("1000")
+         .font(.title)
+ }
+ // o .ignore vem por padrao entao pode ser só:  .accessibilityElement()
+ .accessibilityElement(children: .ignore)
+ .accessibilityLabel("Your score is 1000")
+ 
+ VStack {
+     Text("Your score is")
+     
+     Text("1000")
+         .font(.title)
+ }
+ .accessibilityElement(children: .combine)
+ 
+ 
+ Como esconder a leitura do voiceover
+ 
+ Image(decorative: "character")
+ 
+ Image(.character)
+     .accessibilityHidden(true)
+ 
+------------
+Aula 1:
+
+struct ContentView: View {
     let picures = [
         "ales-krivec-15949",
         "galina-n-189483",
@@ -45,7 +101,4 @@ struct ContentView: View {
 //            .accessibilityRemoveTraits(.isImage)
     }
 }
-
-#Preview {
-    ContentView()
-}
+*/
