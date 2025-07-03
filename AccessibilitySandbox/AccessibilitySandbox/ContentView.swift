@@ -8,36 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var value = 10
-    
     
     var body: some View {
-        VStack {
-            Text("Value: \(value)")
-            
-            Button("Increment") {
-                value += 1
-            }
-            
-            Button("Decrement") {
-                value -= 1
-            }
+        Button("John Fitzgerald Kennedy") {
+            print("Button tapped!")
         }
-        .accessibilityElement()
-        .accessibilityLabel("Value")
-        .accessibilityValue(String(value))
-        .accessibilityAdjustableAction { direction in
-            switch direction {
-            case .increment:
-                value += 1
-            case .decrement:
-                value -= 1
-            @unknown default:
-                print("Not handled")
-            }
-        }
-        
+        .accessibilityInputLabels(["John Fitzgerald Kennedy", "Kenndy", "JFK"])
     }
+    
+    
 }
 
 #Preview {
@@ -47,12 +26,48 @@ struct ContentView: View {
 /**
  
  
-Aula 3:
+Day 75 - Aula 1:
  
  
  
 ------------
-Aula 2:
+Day 74 - Aula 3:
+ 
+ struct ContentView: View {
+     @State private var value = 10
+     
+     var body: some View {
+         VStack {
+             Text("Value: \(value)")
+             
+             Button("Increment") {
+                 value += 1
+             }
+             
+             Button("Decrement") {
+                 value -= 1
+             }
+         }
+         .accessibilityElement()
+         .accessibilityLabel("Value")
+         .accessibilityValue(String(value))
+         .accessibilityAdjustableAction { direction in
+             switch direction {
+             case .increment:
+                 value += 1
+             case .decrement:
+                 value -= 1
+             @unknown default:
+                 print("Not handled")
+             }
+         }
+         
+     }
+ }
+ 
+ 
+------------
+Day 74 - Aula 2:
  
  VStack {
      Text("Your score is")
@@ -81,7 +96,7 @@ Aula 2:
      .accessibilityHidden(true)
  
 ------------
-Aula 1:
+Day 74 - Aula 1:
 
 struct ContentView: View {
     let picures = [
