@@ -32,8 +32,24 @@ struct RatingView: View {
                     image(for: number)
                         .foregroundStyle(number > rating ? offColor : onColor)
                 }
+
             }
-        }.buttonStyle(.plain) //Desabilita o toque da row inteira na AddBookView, quando usamos o Form + Section o SwiftUI entende que a fileira inteira é clicavel
+        }
+        //Desabilita o toque da row inteira na AddBookView, quando usamos o Form + Section o SwiftUI entende que a fileira inteira é clicavel
+        .buttonStyle(.plain)
+        .accessibilityElement()
+        .accessibilityLabel(label)
+        .accessibilityValue(rating == 1 ? "1 star" : "\(rating) stars")
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment:
+                if rating < maximumRating { rating += 1 }
+            case .decrement:
+                if rating > 1 { rating -= 1}
+            @unknown default:
+                break
+            }
+        }
     }
     
     func image(for number: Int) -> Image {
