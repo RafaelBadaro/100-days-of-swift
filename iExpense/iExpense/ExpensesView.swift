@@ -12,10 +12,10 @@ struct ExpensesView: View {
     @Environment(\.modelContext) var modelContext
     @Query var expenses: [ExpenseItem]
     
-    let prefferedCurrency: String
+    let preferredCurrency: String
     
     init(prefferedCurrency: String, expenseType: String, sortOrder: [SortDescriptor<ExpenseItem>]) {
-        self.prefferedCurrency = prefferedCurrency
+        self.preferredCurrency = prefferedCurrency
         _expenses = Query(filter: #Predicate { expense in
             if expenseType != "All" {
                 return expense.type == expenseType
@@ -40,9 +40,12 @@ struct ExpensesView: View {
                         
                         Spacer()
                         
-                        Text(expense.amount, format: .currency(code: prefferedCurrency))
+                        Text(expense.amount, format: .currency(code: preferredCurrency))
                             .amountStyle(expense.amount)
                     }
+                    .accessibilityElement()
+                    .accessibilityLabel("\(expense.name), \(expense.type) expense, amount \(expense.amount.formatted(.currency(code: preferredCurrency)))")
+
                 }
                 .onDelete(perform: deleteExpenses)
             }
