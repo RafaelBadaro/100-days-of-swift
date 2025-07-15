@@ -10,9 +10,8 @@ import PhotosUI
 
 struct AddContactView: View {
     @Environment(\.dismiss) var dismiss
-    
-    @Binding var contacts: [Contact]
-    
+    @Environment(DataManager.self) private var dataManager
+        
     @State private var pickerItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
 
@@ -46,9 +45,12 @@ struct AddContactView: View {
                 .frame(height: 200)
                 .onChange(of: pickerItem, loadImage)
                 
-                // Se o usuario selecionou uma imagem, mostre o textfield
+                // Se o usuario selecionou uma imagem, mostrar o textfield
                 if selectedImageData != nil {
-                    TextField("Name", text: $name)
+                    TextField("Contact name", text: $name)
+                        .padding()
+                        .background(Color.brown.tertiary)
+                        .cornerRadius(50)
                         .padding([.top], 25)
                 }
             }
@@ -82,15 +84,14 @@ struct AddContactView: View {
         guard let selectedImageData = selectedImageData else { return }
         
         let newContact = Contact(name: name, image: selectedImageData)
-        
-        contacts.append(newContact)
-        
-        DataManager.save(contacts: contacts)
+    
+        dataManager.addContact(newContact)
         
         dismiss()
     }
 }
 
 #Preview {
-    AddContactView(contacts: .constant([]))
+    AddContactView()
+        .environment(DataManager.shared)
 }

@@ -8,16 +8,18 @@
 import Foundation
 import UIKit
 
-struct Contact: Identifiable, Codable, Hashable, Comparable {
-    static func < (lhs: Contact, rhs: Contact) -> Bool {
-        lhs.name.lowercased() < rhs.name.lowercased()
-    }
-    
+struct Contact: Identifiable, Codable, Hashable {
     var id = UUID()
     var name: String
     var image: Data
     
     var uiImage: UIImage? {
         return UIImage(data: self.image)
+    }
+}
+
+extension Contact: Comparable {
+    static func < (lhs: Contact, rhs: Contact) -> Bool {
+        lhs.name.lowercased() < rhs.name.lowercased()
     }
 }

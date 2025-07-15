@@ -24,13 +24,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var contacts: [Contact] = []
+    @Environment(DataManager.self) private var dataManager
     @State private var showingAddContactSheet: Bool = false
     
     var body: some View {
         NavigationStack {
             ZStack {
-                if contacts.isEmpty {
+                if dataManager.contacts.isEmpty {
                     emptyContent
                 } else {
                     bodyContent
@@ -38,7 +38,8 @@ struct ContentView: View {
             }
             .navigationTitle("Contacts")
             .sheet(isPresented: $showingAddContactSheet) {
-                AddContactView(contacts: $contacts)
+                AddContactView()
+                    .presentationDetents([.medium])
             }
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -49,14 +50,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .onAppear {
-                self.fetchContacts()
-            }
         }
-    }
-    
-    func fetchContacts() {
-        contacts = DataManager.load()
     }
 }
 
@@ -68,7 +62,7 @@ extension ContentView {
     }
     private var bodyContent: some View {
         List {
-            ForEach(contacts.sorted()) { contact in
+            ForEach(dataManager.contacts.sorted()) { contact in
                 NavigationLink(value: contact) {
                     HStack {
                         if let uiImage = contact.uiImage {
@@ -82,14 +76,15 @@ extension ContentView {
                         Text(contact.name)
                     }
                 }
-            }
+            }.onDelete(perform: dataManager.deleteContacts)
         }
          .navigationDestination(for: Contact.self) { contact in
-             EditContactView(contact: contact, contacts: $contacts)
+             EditContactView(contact: contact)
          }
     }
 }
 
 #Preview {
     ContentView()
+        .environment(DataManager.shared)
 }

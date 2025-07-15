@@ -9,8 +9,9 @@ import SwiftUI
 
 struct EditContactView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(DataManager.self) private var dataManager
+    
     let contact: Contact
-    @Binding var contacts: [Contact]
     
     var body: some View {
         if let contactImage = contact.uiImage {
@@ -18,8 +19,10 @@ struct EditContactView: View {
                 Image(uiImage: contactImage)
                     .resizable()
                     .scaledToFit()
+    
                 Text("Name: \(contact.name)")
             }
+            .padding()
             .toolbar {
                 ToolbarItem(placement: .destructiveAction) {
                     Button ("Delete contact"){
@@ -34,12 +37,12 @@ struct EditContactView: View {
     }
     
     func deleteContact() {
-        contacts.removeAll { $0.id == contact.id }
-        DataManager.save(contacts: contacts)
+        dataManager.deleteContact(id: contact.id)
         dismiss()
     }
 }
 
 #Preview {
-    EditContactView(contact: Contact(id: UUID(), name: "Test", image: Data()), contacts: .constant([]))
+    EditContactView(contact: Contact(id: UUID(), name: "Test", image: Data()))
+        .environment(DataManager.shared)
 }
