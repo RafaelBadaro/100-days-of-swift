@@ -79,7 +79,6 @@ struct PlaceDetailsSection: View {
     }
 }
 
-
 struct NearbyPagesSection: View {
     let loadingState: LoadingState
     let pages: [Page]
@@ -121,8 +120,6 @@ struct PageRow: View {
         }
     }
 }
-
-
 
 #Preview {
     EditView(location: .example) { _ in }
