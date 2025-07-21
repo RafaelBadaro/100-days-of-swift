@@ -11,6 +11,8 @@ import PhotosUI
 struct AddContactView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(DataManager.self) private var dataManager
+    
+    let locationFetcher = LocationFetcher()
         
     @State private var pickerItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
@@ -69,6 +71,9 @@ struct AddContactView: View {
                     .disabled(disableButton)
                 }
             }
+            .onAppear {
+                locationFetcher.start()
+            }
         }
     }
     
@@ -82,8 +87,13 @@ struct AddContactView: View {
     
     func saveNewContact(){
         guard let selectedImageData = selectedImageData else { return }
+    
+        var newContact = Contact(name: name, image: selectedImageData)
         
-        let newContact = Contact(name: name, image: selectedImageData)
+        if let location = locationFetcher.lastKnownLocation {
+            newContact.latitude = location.latitude
+            newContact.longitude = location.longitude
+        }
     
         dataManager.addContact(newContact)
         
