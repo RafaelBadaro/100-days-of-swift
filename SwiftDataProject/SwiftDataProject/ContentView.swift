@@ -17,7 +17,7 @@ struct ContentView: View {
     ]
     
     var body: some View {
-        NavigationStack  {
+        NavigationStack {
             UsersView(minimumJoinDate: showingUpComingOnly ? .now : .distantPast, sortOrder: sortOrder)
             .navigationTitle("Users")
             .toolbar {
