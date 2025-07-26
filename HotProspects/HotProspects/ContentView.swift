@@ -8,22 +8,36 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedTab = "One"
+    @State private var output = ""
     
     var body: some View {
-        // Dica: a TabView prefere ser a "parent" view e as views dentro dela com a NavigationStack as necessary
-        TabView(selection: $selectedTab) {
-            Button("Show Tab 2") {
-                selectedTab = "Two"
+        Text(output)
+            .task {
+                await fetchReadings()
             }
-            .tabItem {
-                    Label("One", systemImage: "star")
-            }.tag("One")
-            
-            Text("Tab 2")
-                .tabItem {
-                    Label("Two", systemImage: "circle")
-            }.tag("Two")
+    }
+    
+    func fetchReadings() async {
+        let fetchTask = Task {
+            let url = URL(string: "https://www.hackingwithswift.com/samples/readings.json")!
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let readings = try JSONDecoder().decode([Double].self, from: data)
+             return "Found \(readings.count) readings"
+        }
+        
+        let result = await fetchTask.result
+        
+//        do {
+//            output = try result.get()
+//        } catch {
+//            output = "Error: \(error.localizedDescription)"
+//        }
+        
+        switch result{
+        case .success(let str):
+            output = str
+        case .failure(let error):
+            output = "Error: \(error.localizedDescription)"
         }
     }
 }
@@ -32,7 +46,56 @@ struct ContentView: View {
     ContentView()
 }
 
-/**
+/*
+ 
+ --------
+ Day 80:
+ 
+ Aula 1:
+ 
+ struct ContentView: View {
+     @State private var output = ""
+     
+     var body: some View {
+         Text(output)
+             .task {
+                 await fetchReadings()
+             }
+     }
+     
+     func fetchReadings() async {
+         let fetchTask = Task {
+             let url = URL(string: "https://www.hackingwithswift.com/samples/readings.json")!
+             let (data, _) = try await URLSession.shared.data(from: url)
+             let readings = try JSONDecoder().decode([Double].self, from: data)
+              return "Found \(readings.count) readings"
+         }
+         
+         let result = await fetchTask.result
+         
+ //        do {
+ //            output = try result.get()
+ //        } catch {
+ //            output = "Error: \(error.localizedDescription)"
+ //        }
+         
+         switch result{
+         case .success(let str):
+             output = str
+         case .failure(let error):
+             output = "Error: \(error.localizedDescription)"
+         }
+     }
+ }
+ 
+ 
+ --------
+ Aula 2:
+ 
+ 
+ 
+ --------
+ Aula 3:
  
  
  
@@ -40,8 +103,7 @@ struct ContentView: View {
  
  
  
- 
- 
+ --------
  Day 79
  
  Aula 3:
