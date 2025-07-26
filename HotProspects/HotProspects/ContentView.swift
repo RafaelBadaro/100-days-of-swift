@@ -8,37 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var output = ""
-    
     var body: some View {
-        Text(output)
-            .task {
-                await fetchReadings()
-            }
-    }
-    
-    func fetchReadings() async {
-        let fetchTask = Task {
-            let url = URL(string: "https://www.hackingwithswift.com/samples/readings.json")!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let readings = try JSONDecoder().decode([Double].self, from: data)
-             return "Found \(readings.count) readings"
-        }
-        
-        let result = await fetchTask.result
-        
-//        do {
-//            output = try result.get()
-//        } catch {
-//            output = "Error: \(error.localizedDescription)"
-//        }
-        
-        switch result{
-        case .success(let str):
-            output = str
-        case .failure(let error):
-            output = "Error: \(error.localizedDescription)"
-        }
+        Image(.example)
+            .interpolation(.none)
+            .resizable()
+            .scaledToFit()
+            .background(.black)
     }
 }
 
@@ -92,6 +67,15 @@ struct ContentView: View {
  --------
  Aula 2:
  
+ struct ContentView: View {
+     var body: some View {
+         Image(.example)
+             .interpolation(.none)
+             .resizable()
+             .scaledToFit()
+             .background(.black)
+     }
+ }
  
  
  --------
