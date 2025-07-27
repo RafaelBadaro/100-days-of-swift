@@ -8,31 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var background = Color.red
-    
     var body: some View {
-        VStack {
-            Text("Hello World!")
-                .padding()
-                .background(background)
-            
-            Text("Change Color")
-                .padding()
-                .contextMenu {
-                    Button("Red", systemImage: "checkmark.circle.fill", role: .destructive) {
-                        background = Color.red
-                    }
-                    
-                    Button("Green") {
-                        background = Color.green
-                    }
-                    
-                    Button("Blue") {
-                        background = Color.blue
+        List {
+            Text("Teste")
+                .swipeActions {
+                    Button("Send message", systemImage: "minus.circle", role: .destructive) {
+                        print("Delete")
                     }
                 }
+                .swipeActions(edge: .leading) {
+                    Button("Pin", systemImage: "pin") {
+                        print("Pin")
+                    }
+                    .tint(.orange)
+                }
         }
-
     }
 }
 
@@ -41,6 +31,19 @@ struct ContentView: View {
 }
 
 /*
+ 
+ --------
+ Day 81:
+ 
+ Aula 1:
+ 
+ --------
+ Aula 2:
+ 
+ --------
+ Aula 3:
+ 
+ 
  
  --------
  Day 80:
@@ -100,7 +103,34 @@ struct ContentView: View {
  --------
  Aula 3:
  
- 
+ struct ContentView: View {
+     @State private var background = Color.red
+     
+     var body: some View {
+         VStack {
+             Text("Hello World!")
+                 .padding()
+                 .background(background)
+             
+             Text("Change Color")
+                 .padding()
+                 .contextMenu {
+                     Button("Red", systemImage: "checkmark.circle.fill", role: .destructive) {
+                         background = Color.red
+                     }
+                     
+                     Button("Green") {
+                         background = Color.green
+                     }
+                     
+                     Button("Blue") {
+                         background = Color.blue
+                     }
+                 }
+         }
+
+     }
+ }
  
  
  
