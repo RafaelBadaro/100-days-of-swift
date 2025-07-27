@@ -6,22 +6,34 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct ContentView: View {
     var body: some View {
-        List {
-            Text("Teste")
-                .swipeActions {
-                    Button("Send message", systemImage: "minus.circle", role: .destructive) {
-                        print("Delete")
+        VStack {
+            Button("Request permission") {
+                UNUserNotificationCenter.current()
+                    .requestAuthorization(options: [.alert, .badge]) { success, error in
+                    if success {
+                        print("All set!")
+                    } else if let error {
+                        print(error.localizedDescription)
                     }
                 }
-                .swipeActions(edge: .leading) {
-                    Button("Pin", systemImage: "pin") {
-                        print("Pin")
-                    }
-                    .tint(.orange)
-                }
+            }
+            
+            Button("Schedule notification") {
+                let content = UNMutableNotificationContent()
+                content.title = "Feed the cat"
+                content.subtitle = "It looks hungry"
+                content.sound = UNNotificationSound.default
+                
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+                
+                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                
+                UNUserNotificationCenter.current().add(request)
+            }
         }
     }
 }
@@ -36,9 +48,60 @@ struct ContentView: View {
  Day 81:
  
  Aula 1:
+ struct ContentView: View {
+     var body: some View {
+         List {
+             Text("Teste")
+                 .swipeActions {
+                     Button("Send message", systemImage: "minus.circle", role: .destructive) {
+                         print("Delete")
+                     }
+                 }
+                 .swipeActions(edge: .leading) {
+                     Button("Pin", systemImage: "pin") {
+                         print("Pin")
+                     }
+                     .tint(.orange)
+                 }
+         }
+     }
+ }
  
  --------
  Aula 2:
+ 
+ import SwiftUI
+ import UserNotifications
+
+ struct ContentView: View {
+     var body: some View {
+         VStack {
+             Button("Request permission") {
+                 UNUserNotificationCenter.current()
+                     .requestAuthorization(options: [.alert, .badge]) { success, error in
+                     if success {
+                         print("All set!")
+                     } else if let error {
+                         print(error.localizedDescription)
+                     }
+                 }
+             }
+             
+             Button("Schedule notification") {
+                 let content = UNMutableNotificationContent()
+                 content.title = "Feed the cat"
+                 content.subtitle = "It looks hungry"
+                 content.sound = UNNotificationSound.default
+                 
+                 let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+                 
+                 let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                 
+                 UNUserNotificationCenter.current().add(request)
+             }
+         }
+     }
+ }
  
  --------
  Aula 3:
