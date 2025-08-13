@@ -23,7 +23,6 @@ struct ContentView: View {
                 .tabItem {
                     Label("Uncontacted", systemImage: "questionmark.diamond")
                 }
-            
             MeView()
                 .tabItem {
                     Label("Me", systemImage: "person.crop.square")
