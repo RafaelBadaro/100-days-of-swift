@@ -15,9 +15,22 @@
 		53D8ECA72E32E695008AB9B3 /* HotProspects.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HotProspects.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		530FEAB92E512EF6007550E7 /* Exceptions for "HotProspects" folder in "HotProspects" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 53D8ECA62E32E695008AB9B3 /* HotProspects */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		53D8ECA92E32E695008AB9B3 /* HotProspects */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				530FEAB92E512EF6007550E7 /* Exceptions for "HotProspects" folder in "HotProspects" target */,
+			);
 			path = HotProspects;
 			sourceTree = "<group>";
 		};
@@ -269,6 +282,8 @@
 				DEVELOPMENT_TEAM = ZA4Z6U42FJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HotProspects/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need to scan QR codes.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We want to save your QRCode";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -299,6 +314,8 @@
 				DEVELOPMENT_TEAM = ZA4Z6U42FJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HotProspects/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need to scan QR codes.";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We want to save your QRCode";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
