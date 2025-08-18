@@ -10,15 +10,18 @@ import SwiftData
 import SwiftUI
 import UserNotifications
 
+enum FilterType {
+    case none, contacted, uncontacted
+}
+
 struct ProspectsView: View {
-    enum FilterType {
-        case none, contacted, uncontacted
-    }
-    
     @Environment(\.modelContext) var modelContext
-    @Query(sort: \Prospect.name) var prospects: [Prospect]
     @State private var isShowingScanner = false
     @State private var selectedProspects = Set<Prospect>()
+    @State private var sortOrder = [
+        SortDescriptor(\Prospect.name),
+        SortDescriptor(\Prospect.dateAdded, order: .reverse)
+    ]
     
     let filter: FilterType
     
@@ -35,51 +38,30 @@ struct ProspectsView: View {
     
     init(filter: FilterType) {
         self.filter = filter
-        
-        if filter != .none {
-            let showContactedOnly = filter == .contacted
-            
-            _prospects = Query(filter: #Predicate {
-                $0.isContacted == showContactedOnly
-            }, sort: [SortDescriptor(\Prospect.name)])
-        }
     }
     
     var body: some View {
         NavigationStack {
-            List(prospects, selection: $selectedProspects) { prospect in
-                VStack (alignment: .leading) {
-                    Text(prospect.name)
-                        .font(.headline)
-                    Text(prospect.emailAddress)
-                        .foregroundStyle(.secondary)
-                }
-                .swipeActions {
-                    Button("Delete", systemImage: "trash", role: .destructive) {
-                        modelContext.delete(prospect)
-                    }
-                    
-                    if prospect.isContacted {
-                        Button("Mark Uncontacted", systemImage: "person.crop.circle.badge.xmark") {
-                            prospect.isContacted.toggle()
-                        }
-                        .tint(.blue)
-                    } else {
-                        Button("Mark Contacted", systemImage: "person.crop.circle.fill.badge.checkmark") {
-                            prospect.isContacted.toggle()
-                        }
-                        .tint(.green)
-                        
-                        Button("Remind Me", systemImage: "bell") {
-                            addNotification(for: prospect)
-                        }
-                        .tint(.orange)
-                    }
-                }
-                .tag(prospect)
-            }
+            ProspectsListView(filter: filter, selectedProspects: $selectedProspects, sortOrder: sortOrder)
             .navigationTitle(title)
             .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu("Sort", systemImage: "arrow.up.arrow.down") {
+                        Picker("Sort", selection: $sortOrder) {
+                            Text("Sort by Name")
+                                .tag([
+                                    SortDescriptor(\Prospect.name),
+                                    SortDescriptor(\Prospect.dateAdded, order: .reverse)
+                                ])
+                            Text("Sort by Date Added")
+                                .tag([
+                                    SortDescriptor(\Prospect.dateAdded, order: .reverse),
+                                    SortDescriptor(\Prospect.name)
+                                ])
+                        }
+                    }
+                 }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Scan", systemImage: "qrcode.viewfinder") {
                         isShowingScanner = true
@@ -111,7 +93,9 @@ struct ProspectsView: View {
             let details = result.string.components(separatedBy: "\n")
             guard details.count == 2 else { return }
             
-            let person = Prospect(name: details[0], emailAddress: details[1], isContacted: false)
+            let person = Prospect(name: details[0],
+                                  emailAddress: details[1],
+                                  isContacted: false)
             modelContext.insert(person)
             
         case .failure(let error):
@@ -122,43 +106,6 @@ struct ProspectsView: View {
     func massDelete() {
         for prospect in selectedProspects {
             modelContext.delete(prospect)
-        }
-    }
-    
-    func addNotification(for prospect: Prospect) {
-        let center = UNUserNotificationCenter.current()
-        
-        let addRequest = {
-            let content = UNMutableNotificationContent()
-            content.title = "Contact \(prospect.name)"
-            content.subtitle = prospect.emailAddress
-            content.sound = .default
-            
-//            var dateComponents = DateComponents()
-//            dateComponents.hour = 9
-//            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-            
-            // MARK: For testing
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-            
-            let request = UNNotificationRequest(identifier: UUID().uuidString,
-                                                content: content,
-                                                trigger: trigger)
-            center.add(request)
-        }
-        
-        center.getNotificationSettings { settings in
-            if settings.authorizationStatus == .authorized {
-                addRequest()
-            } else {
-                center.requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
-                    if success {
-                        addRequest()
-                    } else if let error = error {
-                        print(error.localizedDescription)
-                    }
-                }
-            }
         }
     }
 }
