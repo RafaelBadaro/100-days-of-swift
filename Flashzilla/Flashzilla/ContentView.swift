@@ -8,36 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var offset = CGSize.zero
-    @State private var isDragging = false
-    
     var body: some View {
-        let dragGesture = DragGesture()
-            .onChanged { value in
-                offset = value.translation
-            }
-            .onEnded { _ in
-                withAnimation {
-                    offset = .zero
-                    isDragging = false
-                }
-            }
-
-        let pressGesture = LongPressGesture()
-            .onEnded { value in
-                withAnimation {
-                    isDragging = true
-                }
-            }
-        
-        let combied = pressGesture.sequenced(before: dragGesture)
-        
-        Circle()
-            .fill(.red)
-            .frame(width: 64, height: 64)
-            .scaleEffect(isDragging ? 1.5 : 1)
-            .offset(offset)
-            .gesture(combied)
+        VStack {
+            Text("Hello")
+            
+            Spacer()
+                .frame(height: 100)
+            
+            Text("World")
+        }
+        .contentShape(.rect)
+        .onTapGesture {
+            print("VStack tapped!")
+        }
     }
 }
 
@@ -51,8 +34,50 @@ struct ContentView: View {
  
  
  
+ struct ContentView: View {
+     var body: some View {
+         VStack {
+             Text("Hello")
+             
+             Spacer()
+                 .frame(height: 100)
+             
+             Text("World")
+         }
+         .contentShape(.rect)
+         .onTapGesture {
+             print("VStack tapped!")
+         }
+     }
+ }
+
  
- -------
+ 
+ struct ContentView: View {
+     var body: some View {
+         ZStack {
+             Rectangle()
+                 .fill(.blue)
+                 .frame(width: 300, height: 300)
+                 .onTapGesture {
+                     print("Rectangle Tapped")
+                 }
+             
+             Circle()
+                 .fill(.red)
+                 .frame(width: 300, height: 300)
+                 .contentShape(.rect)
+                 .onTapGesture {
+                     print("Circle Tapped")
+                 }
+                 //.allowsHitTesting(false)
+         }
+     }
+ }
+ 
+ 
+ 
+ --------------
  Day 86 - Aula 2
  
  struct ContentView: View {
