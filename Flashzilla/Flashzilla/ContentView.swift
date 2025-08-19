@@ -7,21 +7,23 @@
 
 import SwiftUI
 
+func withOptionAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
+    if UIAccessibility.isReduceMotionEnabled {
+        return try body()
+    }
+    
+    return try withAnimation(animation, body)
+}
+
 struct ContentView: View {
-    @Environment(\.scenePhase) var scenePhase
+    @Environment(\.accessibilityReduceTransparency) var accessibilityReduceTransparency
     
     var body: some View {
-        Text("Hello World")
-            .onChange(of: scenePhase) { oldPhase, newPhase in
-                if newPhase == .active {
-                    print("Active")
-                } else if newPhase == .inactive {
-                    print("Inactive")
-                } else {
-                    print("Background")
-                }
-            }
-
+        Text("Hello World!")
+            .padding()
+            .background(accessibilityReduceTransparency ? .black : .black.opacity(0.5))
+            .foregroundStyle(.white)
+            .clipShape(.capsule)
     }
 }
 
@@ -30,10 +32,90 @@ struct ContentView: View {
 }
 
 /*
+ Day 87 - Aula 3
  
  
+ 
+ 
+ 
+ func withOptionAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
+     if UIAccessibility.isReduceMotionEnabled {
+         return try body()
+     }
+     
+     return try withAnimation(animation, body)
+ }
+
+ struct ContentView: View {
+     @State private var scale = 1.0
+     
+     var body: some View {
+         Button("Hello World!") {
+             withOptionAnimation {
+                 scale *= 1.5
+             }
+         }
+         .scaleEffect(scale)
+     }
+ }
+ 
+ 
+ struct ContentView: View {
+     @Environment(\.accessibilityReduceMotion) var accessibilityReduceMotion
+     @State private var scale = 1.0
+     
+     var body: some View {
+         Button("Hello World!") {
+             if accessibilityReduceMotion {
+                 scale *= 1.5
+             } else {
+                  withAnimation {
+                     scale *= 1.5
+                 }
+             }
+         }
+         .scaleEffect(scale)
+     }
+ }
+ 
+ struct ContentView: View {
+     @Environment(\.accessibilityDifferentiateWithoutColor) var accessibilityDifferentiateWithoutColor
+     
+     var body: some View {
+         HStack {
+             if accessibilityDifferentiateWithoutColor {
+                 Image(systemName: "checkmark.circle")
+             }
+             
+             Text("Success")
+         }
+         .padding()
+         .background(accessibilityDifferentiateWithoutColor ? .black : .green)
+         .foregroundStyle(.white)
+         .clipShape(.capsule)
+     }
+ }
+ 
+ --------------
  Day 87 - Aula 2
  
+ struct ContentView: View {
+     @Environment(\.scenePhase) var scenePhase
+     
+     var body: some View {
+         Text("Hello World")
+             .onChange(of: scenePhase) { oldPhase, newPhase in
+                 if newPhase == .active {
+                     print("Active")
+                 } else if newPhase == .inactive {
+                     print("Inactive")
+                 } else {
+                     print("Background")
+                 }
+             }
+
+     }
+ }
  
  
  --------------
