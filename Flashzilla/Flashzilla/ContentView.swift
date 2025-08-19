@@ -7,23 +7,9 @@
 
 import SwiftUI
 
-func withOptionAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
-    if UIAccessibility.isReduceMotionEnabled {
-        return try body()
-    }
-    
-    return try withAnimation(animation, body)
-}
-
 struct ContentView: View {
-    @Environment(\.accessibilityReduceTransparency) var accessibilityReduceTransparency
-    
     var body: some View {
         Text("Hello World!")
-            .padding()
-            .background(accessibilityReduceTransparency ? .black : .black.opacity(0.5))
-            .foregroundStyle(.white)
-            .clipShape(.capsule)
     }
 }
 
@@ -34,8 +20,17 @@ struct ContentView: View {
 /*
  Day 87 - Aula 3
  
- 
- 
+ struct ContentView: View {
+     @Environment(\.accessibilityReduceTransparency) var accessibilityReduceTransparency
+     
+     var body: some View {
+         Text("Hello World!")
+             .padding()
+             .background(accessibilityReduceTransparency ? .black : .black.opacity(0.5))
+             .foregroundStyle(.white)
+             .clipShape(.capsule)
+     }
+ }
  
  
  func withOptionAnimation<Result>(_ animation: Animation? = .default, _ body: () throws -> Result) rethrows -> Result {
