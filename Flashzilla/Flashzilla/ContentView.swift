@@ -46,16 +46,7 @@ struct ContentView: View {
                     .clipShape(.capsule)
                 
                 ZStack {
-                    ForEach(0..<cards.count, id: \.self) { index in
-                        CardView(card: cards[index]) {
-                            withAnimation {
-                                removeCard(at: index)
-                            }
-                        }
-                        .stacked(at: index, in: cards.count)
-                        .allowsHitTesting(index == cards.count - 1)
-                        .accessibilityHidden(index < cards.count - 1)
-                    }
+                    cardListView
                 }
                 .allowsHitTesting(timeRemaining > 0)
                 
@@ -95,7 +86,7 @@ struct ContentView: View {
                     HStack {
                         Button {
                             withAnimation {
-                                removeCard(at: cards.count - 1)
+                                removeCard(cards[cards.count - 1], isCorrect: false)
                             }
                         } label: {
                             Image(systemName: "xmark.circle")
@@ -110,7 +101,7 @@ struct ContentView: View {
                         
                         Button {
                             withAnimation {
-                                removeCard(at: cards.count - 1)
+                                removeCard(cards[cards.count - 1], isCorrect: true)
                             }
                         } label: {
                             Image(systemName: "checkmark.circle")
@@ -148,16 +139,23 @@ struct ContentView: View {
         .onAppear(perform: resetCards)
     }
     
-    func removeCard(at index: Int) {
-        guard index >= 0 else { return }
+    func removeCard(_ card: Card, isCorrect: Bool) {
+        guard let index = cards.firstIndex(where: { $0.id == card.id }) else { return }
         
         cards.remove(at: index)
         
+        if !isCorrect {
+            var newCard = card
+            // Criar um novo id é necessário para o SwiftUI renderizar a lista de novo
+            newCard.id = UUID()
+            cards.insert(newCard, at: 0)
+        }
+    
         if cards.isEmpty {
             isActive = false
         }
     }
-    
+        
     func resetCards() {
         timeRemaining = 100
         isActive = true
@@ -169,6 +167,21 @@ struct ContentView: View {
             if let decoded = try? JSONDecoder().decode([Card].self, from: data) {
                 cards = decoded
             }
+        }
+    }
+}
+
+private extension ContentView {
+    private var cardListView: some View {
+        ForEach(cards) { card in
+            CardView(card: card) { isCorrect in
+                withAnimation {
+                    removeCard(card, isCorrect: isCorrect)
+                }
+            }
+            .stacked(at: cards.firstIndex(where: { $0.id == card.id }) ?? 0, in: cards.count)
+            .allowsHitTesting(cards.firstIndex(where: { $0.id == card.id }) ?? 0 == cards.count - 1)
+            .accessibilityHidden(cards.firstIndex(where: { $0.id == card.id }) ?? 0 < cards.count - 1)
         }
     }
 }
