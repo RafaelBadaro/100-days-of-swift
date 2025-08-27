@@ -30,7 +30,17 @@ struct CardView: View {
                     accessibilityDifferentiateWithoutColor
                     ? nil
                     : RoundedRectangle(cornerRadius: 25)
-                        .fill(offset.width > 0 ? .green : .red)
+                        // Challenge #2: o problema é que ao arrastar para a direita soltar ao voltar pro centro o card fica com a cor vermelha (por um momento beeem breve)
+                        // Isso acontece porque setamos o "offset = .zero" no "onEnded"
+                        // Quando o offset = .zero, ele zera as duas propriedades que tem no offset (height e width)
+                        // E quando o width = 0, ele cai no caso de .red aqui desse .fill
+                        //.fill(offset.width > 0 ? .green : .red)
+                        // Em portugues: "Se for maior que zero é .green, se for menor OU IGUAL ele é .red
+                        // pq "ou igual"? pq só especificamos o .green, para quando width > 0
+                        // FIX:
+                        .fill(offset.width > 0 ? .green : (offset.width < 0 ? .red : .white))
+                        // Colocamos outro ternario que verifica se o width < 0, isso garante que o card será vermelho SÓ se o offset for menor que zero
+                        // e caso contrario (ou seja, igual a zero) setamos para .white
                 )
                 .shadow(radius: 10)
             
