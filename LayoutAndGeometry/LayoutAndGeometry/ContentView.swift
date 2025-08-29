@@ -9,13 +9,25 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 0) {
+                ForEach(1..<20) { number in
+                    Text("Number \(number)")
+                        .font(.largeTitle)
+                        .padding()
+                        .background(.red)
+                        .frame(width: 200, height: 200)
+                        .visualEffect { content, proxy in
+                            content
+                                .rotation3DEffect(.degrees(-proxy.frame(in: .global).minX / 8),
+                                                  axis: (x: 0, y: 1, z:0)
+                                )
+                        }
+                }
+            }
+            .scrollTargetLayout()
         }
-        .padding()
+        .scrollTargetBehavior(.viewAligned)
     }
 }
 
@@ -25,6 +37,173 @@ struct ContentView: View {
 
 /**
  
+ Day 93 - aula 4
+ 
+ Baseado no codigo da ultima aula, da pra alterar pra NÃO usar o GeometryReader e usar um novo cara chamado visualEffect, que tambem recebe um proxy
+ 
+ struct ContentView: View {
+     var body: some View {
+         ScrollView(.horizontal, showsIndicators: false) {
+             HStack(spacing: 0) {
+                 ForEach(1..<20) { number in
+                     Text("Number \(number)")
+                         .font(.largeTitle)
+                         .padding()
+                         .background(.red)
+                         .frame(width: 200, height: 200)
+                         .visualEffect { content, proxy in
+                             content
+                                 .rotation3DEffect(.degrees(-proxy.frame(in: .global).minX / 8),
+                                                   axis: (x: 0, y: 1, z:0)
+                                 )
+                         }
+                 }
+             }
+         }
+     }
+ }
+ 
+ Alem disso adicionando as duas linhas destacadas abaixo, a scrollTargetLayout() na HStack e a scrollTargetBehavior(.viewAligned) na ScrollView
+ Temos um efeito que não sei explicar o nome kkkkk MAS ele deixa sempre um item da ScrollView "focado"
+ Sem essas linhas, você meio que pode parar a animação de um item no meio do caminho
+ 
+ struct ContentView: View {
+     var body: some View {
+         ScrollView(.horizontal, showsIndicators: false) {
+             HStack(spacing: 0) {
+                 ForEach(1..<20) { number in
+                     Text("Number \(number)")
+                         .font(.largeTitle)
+                         .padding()
+                         .background(.red)
+                         .frame(width: 200, height: 200)
+                         .visualEffect { content, proxy in
+                             content
+                                 .rotation3DEffect(.degrees(-proxy.frame(in: .global).minX / 8),
+                                                   axis: (x: 0, y: 1, z:0)
+                                 )
+                         }
+                 }
+             }
+             .scrollTargetLayout() <--- essa linha
+         }
+         .scrollTargetBehavior(.viewAligned) <--- essa linha
+     }
+ }
+
+ 
+
+ 
+ 
+ -------
+ Day 93 - aula 3
+ 
+ Basicamente ele criou efeitos na tela usando o esse rotation3DEffect e o GeometryReader
+ 
+ struct ContentView: View {
+     
+     var body: some View {
+         ScrollView(.horizontal, showsIndicators: false) {
+             HStack(spacing: 0) {
+                 ForEach(1..<20) { number in
+                     GeometryReader { proxy in
+                         Text("Number \(number)")
+                             .font(.largeTitle)
+                             .padding()
+                             .background(.red)
+                             .rotation3DEffect(.degrees(-proxy.frame(in: .global).minX / 8),
+                                               axis: (x: 0, y: 1, z:0)
+                             )
+                             .frame(width: 200, height: 200)
+                     }
+                     .frame(width: 200, height: 200)
+                 }
+             }
+         }
+     }
+ }
+ 
+ struct ContentView: View {
+     
+     let colors: [Color] = [.red, .green, .blue, .orange, .pink, .purple, .yellow]
+     
+     var body: some View {
+         GeometryReader { fullView in
+             ScrollView {
+                 ForEach(0..<50) { index in
+                     GeometryReader { proxy in
+                         Text("Row #\(index)")
+                             .font(.title)
+                             .frame(maxWidth: .infinity)
+                             .background(colors[index % 7])
+                             .rotation3DEffect(
+                                 .degrees(proxy.frame(in: .global).minY - fullView.size.height / 2) / 5,
+                                 axis: (x: 0, y: 1, z:0))
+                     }
+                     .frame(height: 40)
+                 }
+             }
+             
+         }
+     }
+ }
+ 
+ 
+ -------
+ Day 93 - aula 2
+ 
+ Muito confuso.
+ Mas ele mostra os posicionamentos na tela usando coordenadas
+ GeometryReader { proxy in
+      Text("Center")
+          .background(.blue)
+          .onTapGesture {
+              print("Global center: \(proxy.frame(in: .global).midX) x \(proxy.frame(in: .global).midY)")
+              print("Custom center: \(proxy.frame(in: .named("Custom")).midX) x \(proxy.frame(in: .named("Custom")).midY)")
+              print("Local center: \(proxy.frame(in: .local).midX) x \(proxy.frame(in: .local).midY)")
+          }
+  }
+ 
+ -------
+ Day 93 - aula 1
+ 
+ Ele mostrou o GeometryReader
+ HStack e VStack não sao consideradas como containers
+
+ Ex:
+ HStack {
+     Text("IMPORTANT")
+         .frame(width: 200)
+         .background(.blue)
+
+     Image(.example)
+         .resizable()
+         .scaledToFit()
+         .containerRelativeFrame(.horizontal) { size, axis in
+             size * 0.8
+         }
+ }
+ 
+ aqui, o Texto ficará pra fora da tela, usando o GeometryReader() a gente resolve isso
+ 
+ GeometryReader { proxy in
+     Image(.example)
+         .resizable()
+         .scaledToFit()
+         .frame(width: proxy.size.width * 0.8)
+ }
+ 
+ porem a imagem vai pro topo da tela, então temos que adicionar:
+ 
+ GeometryReader { proxy in
+     Image(.example)
+         .resizable()
+         .scaledToFit()
+         .frame(width: proxy.size.width * 0.8)
+         .frame(width: proxy.size.width, height: proxy.size.height) <--- essa linha
+ }
+
+ ---------
  Day 92 - aulas 2,3,4
  
  Aula 2 - ele mostrou o alignmentGuide, basicamente ele faz o override do alinhamento
