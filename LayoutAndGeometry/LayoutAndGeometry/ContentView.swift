@@ -8,26 +8,67 @@
 import SwiftUI
 
 struct ContentView: View {
+    let colors: [Color] = [.red, .green, .blue, .orange, .pink, .purple, .yellow]
+
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 0) {
-                ForEach(1..<20) { number in
-                    Text("Number \(number)")
-                        .font(.largeTitle)
-                        .padding()
-                        .background(.red)
-                        .frame(width: 200, height: 200)
-                        .visualEffect { content, proxy in
-                            content
-                                .rotation3DEffect(.degrees(-proxy.frame(in: .global).minX / 8),
-                                                  axis: (x: 0, y: 1, z:0)
-                                )
-                        }
+        GeometryReader { fullView in
+            ScrollView(.vertical) {
+                ForEach(0..<50) { index in
+                    GeometryReader { proxy in
+                        let minY = proxy.frame(in: .global).minY
+                        let fullViewHeight = fullView.size.height
+                        let normalized = minY / fullViewHeight
+                        
+                        Text("Row #\(index)")
+                            .font(.title)
+                            .frame(maxWidth: .infinity)
+                            //.background(colors[index % 7]) Comentando para o Challenge #3
+                            /*
+                             Challenge #3
+                             Aqui foi bem simples kkkk eu só troquei pra usar o  Color(hue:saturation:brightness:)
+                             e enviei os valores "variantes" para o hue
+                             e na propria descricao do tutorial ele fala pra "use min() with the hue so that hue values don’t go beyond 1.0."
+                             então coloquei min(normalized, 1)
+                             */
+                            .background(Color(hue: min(normalized, 1), saturation: 1, brightness: 1))
+                            .rotation3DEffect(.degrees(minY - fullViewHeight / 2) / 5,
+                                              axis: (x: 0, y: 1, z: 0))
+                            /*
+                             Challenge #1
+                             GPT: o minY dá a coordenada Y mínima (topo) da view em relação ao sistema de coordenadas global da tela.
+                             Mede a distância do topo da tela até o topo da view que está dentro do GeometryReader.
+                             Esse valor muda quando você rola (scroll), já que a posição global da view em relação à tela muda.
+                            
+                            No meu caso, é o topo da tela até o topo da Text
+                             */
+                            .opacity(minY <= 50 ? 0 : 1)
+                        
+                            /*
+                             Challenge #2
+                             Esse daqui foi mais dificil, usei o GPT pra me ajudar a pensar em um jeito de normalizar os dados pra ficar entre 0 até 1
+                                Porque? Porque o Scale que eu queria é basicamente 1 (tamanho normal) até no MÁXIMO 0.5 (metade do tamanho)
+                                Só que eu não tinha pensado em uma maneira de fazer com que:
+                                O quanto mais perto do bottom, maior o Scale
+                                E quanto mais perto do top, menor o Scale (até num maximo de 0.5)
+                                Então o GPT sugeriu de pegar a altura da view toda: (fullView.size.height)
+                                Dividido pelo minY (proxy.frame(in: .global).minY)
+                                Isso representa a posição da view relativa à altura da tela em uma escala entre 0 a 1
+                             Pra ver melhor, só colocar esse código aqui, vai dar pra ver que o "normalizado" retorna 0,0 alguma coisa quanto mais perto do topo
+                                 e 1.0 alguma coisa quanto mais perto do bottom
+                             
+                             Text("minY: \(Int(proxy.frame(in: .global).minY)) normalizado \(proxy.frame(in: .global).minY / fullView.size.height)")
+                                                       .font(.caption)
+                                                       .foregroundColor(.white)
+                                                       .padding(4)
+                                                       .background(.black.opacity(0.5))
+                                                       .cornerRadius(5)
+                             */
+                            .scaleEffect(max(normalized, 0.5))
+                    }
+                    .frame(height: 40)
                 }
             }
-            .scrollTargetLayout()
         }
-        .scrollTargetBehavior(.viewAligned)
     }
 }
 
