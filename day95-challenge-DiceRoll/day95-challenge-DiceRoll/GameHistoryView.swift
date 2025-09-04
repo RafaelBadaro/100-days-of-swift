@@ -16,7 +16,7 @@ struct GameHistoryView: View {
                     VStack (alignment: .leading) {
                         Text("Dices:")
                         ForEach(game.dices) { gameDice in
-                            Text("\(gameDice.numberOfSides) -> \(gameDice.rolled ?? 0)")
+                            Text("\(gameDice.numberOfSides)-sided -> \(gameDice.rolled ?? 0)")
                         }
                         Text("Total: \(game.totalRolled)")
                     }

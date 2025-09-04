@@ -23,7 +23,6 @@ import SwiftUI
  5- For a real challenge, make the value rolled by the dice flick through various possible values before settling on the final figure.
  */
 
-
 struct ContentView: View {
     @State private var isShowingHistoryView: Bool = false
     @State private var gameManager = GameManager()
@@ -51,7 +50,11 @@ struct ContentView: View {
                     }
                 }
             }
-
+            .onReceive(gameManager.timer) { time in
+                if gameManager.isBtnDisabled {
+                    gameManager.rollAndSaveGame()
+                }
+            }
         }
     }
     
@@ -61,7 +64,6 @@ struct ContentView: View {
 }
 
 private extension ContentView {
-    
     private var diceSidesView : some View {
         HStack {
             ForEach(DiceSides.allCases, id: \.self) { sides in
@@ -80,6 +82,7 @@ private extension ContentView {
                 Button("Roll dices") {
                     gameManager.rollAndSaveGame()
                 }
+                .disabled(gameManager.isBtnDisabled)
                 .buttonStyle(.borderedProminent)
             } else {
                 emptyView
@@ -93,6 +96,7 @@ private extension ContentView {
             ForEach(gameManager.dices) { dice in
                 HStack {
                     Text("\(dice.numberOfSides)-sided")
+                    
                     if let result = dice.rolled {
                         Text("-> \(result)")
                     }
