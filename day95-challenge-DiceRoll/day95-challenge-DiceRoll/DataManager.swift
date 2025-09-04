@@ -46,5 +46,9 @@ class DataManager {
         saveData()
     }
     
+    func deleteAllGames() {
+        history.removeAll()
+        saveData()
+    }
 
 }
