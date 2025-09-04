@@ -18,18 +18,12 @@ enum DiceSides: Int, CaseIterable, Codable {
     case hundred = 100
 }
 
-@Observable
-class Dice: Identifiable, Codable {
+struct Dice: Identifiable, Codable {
     var id = UUID()
-    let sides: DiceSides
-    var result: Int? = nil
-    
-    init(sides: DiceSides, result: Int? = nil) {
-        self.sides = sides
-        self.result = result
-    }
-    
-    func rollDice() {
-        self.result = Int.random(in: 1...sides.rawValue)
+    let numberOfSides: DiceSides
+    var rolled: Int? = nil
+        
+    mutating func roll() {
+        self.rolled = Int.random(in: 1...numberOfSides.rawValue)
     }
 }

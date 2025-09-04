@@ -23,26 +23,20 @@ import SwiftUI
  5- For a real challenge, make the value rolled by the dice flick through various possible values before settling on the final figure.
  */
 
+
 struct ContentView: View {
-    @State private var isShowingGameCreationView: Bool = false
     @State private var isShowingHistoryView: Bool = false
-    @State private var game: Game = Game()
+    @State private var gameManager = GameManager()
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                if !game.gameDices.isEmpty {
-                    gameView
-                } else {
-                    emptyView
-                }
+            VStack {
+                diceSidesView
+                gameView
             }
-            .navigationTitle("Roll dice")
-            .sheet(isPresented: $isShowingGameCreationView, onDismiss: createGame) {
-                GameCreationView(game: $game)
-            }
+            .navigationTitle("Dice roll")
             .sheet(isPresented: $isShowingHistoryView) {
-                GameHistoryView(gameHistory: DataManager.shared.games)
+                GameHistoryView()
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -52,76 +46,69 @@ struct ContentView: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Game config") {
-                        self.isShowingGameCreationView = true
+                    Button("Reset") {
+                        self.resetGame()
                     }
                 }
             }
+
         }
-    }
-    
-    func rollDices() {
-        self.resetGame()
-        let generator = UIImpactFeedbackGenerator(style: .heavy)
-        
-        self.game.gameDices.forEach { gameDice in
-            // Rola dado
-            gameDice.rollDice()
-            // Posso usar o ! porque sei que vai ter um result
-            self.game.total += gameDice.result!
-            generator.impactOccurred()
-        }
-        
-        let gameHistory = GameHistory(gameDices: self.game.gameDices,
-                                      total: self.game.total)
-        DataManager.shared.insertGame(gameHistory)
     }
     
     func resetGame() {
-        self.game.total = 0
-        self.game.gameDices.forEach { gameDice in
-            gameDice.result = nil
-        }
-    }
-    
-    func createGame() {
-        self.game.total = 0
-        self.game.gameDices = []
-        self.game.createGameDices()
+        self.gameManager.reset()
     }
 }
 
 private extension ContentView {
+    
+    private var diceSidesView : some View {
+        HStack {
+            ForEach(DiceSides.allCases, id: \.self) { sides in
+                Button("\(sides.rawValue)") {
+                    gameManager.addDice(sides)
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+    }
+    
     private var gameView: some View {
-        VStack {
-            ForEach(game.gameDices) { gameDice in
+        ScrollView {
+            if !gameManager.dices.isEmpty {
+                diceView
+                Button("Roll dices") {
+                    gameManager.rollAndSaveGame()
+                }
+                .buttonStyle(.borderedProminent)
+            } else {
+                emptyView
+            }
+        }
+    }
+    
+    private var diceView: some View {
+        VStack(alignment: .leading) {
+            Text("Selected dices:")
+            ForEach(gameManager.dices) { dice in
                 HStack {
-                    Text("\(gameDice.sides.rawValue) sided dice")
-                    
-                    if let result = gameDice.result {
-                        Text("- Result: \(result)")
+                    Text("\(dice.numberOfSides)-sided")
+                    if let result = dice.rolled {
+                        Text("-> \(result)")
                     }
                 }
-                .padding()
             }
             
-            Text("Total rolled: \(game.total)")
-                .padding()
-            
-            Button("Roll dice", action: rollDices)
-                .buttonStyle(.borderedProminent)
+            if gameManager.totalRolled > 0 {
+                Text("Result: \(gameManager.totalRolled)")
+            }
         }
     }
     
     private var emptyView: some View {
         VStack {
-            Text("No game created, please create one.")
-            Button("Create game") {
-                self.isShowingGameCreationView = true
-            }
-            .buttonStyle(.borderedProminent)
+            Text("No dices added, click the numbers to add them!")
         }
-
     }
 }
 

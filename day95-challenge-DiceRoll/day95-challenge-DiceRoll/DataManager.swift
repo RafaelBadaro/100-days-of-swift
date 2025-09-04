@@ -12,7 +12,7 @@ import Observation
 class DataManager {
     private let SAVE_PATH = URL.documentsDirectory.appending(path: "SavedGames")
     static let shared = DataManager()
-    private(set) var games: [GameHistory] = []
+    private(set) var history: [Game] = []
     
     private init() {
         self.loadData()
@@ -21,7 +21,7 @@ class DataManager {
     private func loadData() {
         do {
             let data = try Data(contentsOf: SAVE_PATH)
-            self.games = try JSONDecoder().decode([GameHistory].self, from: data)
+            self.history = try JSONDecoder().decode([Game].self, from: data)
         } catch {
             
         }
@@ -29,20 +29,20 @@ class DataManager {
     
     private func saveData() {
         do {
-            let data = try JSONEncoder().encode(games)
+            let data = try JSONEncoder().encode(history)
             try data.write(to: SAVE_PATH, options: [.atomic, .completeFileProtection])
         } catch {
             
         }
     }
     
-    func insertGame(_ game: GameHistory) {
-        games.append(game)
+    func insertGame(_ game: Game) {
+        history.append(game)
         saveData()
     }
     
     func deleteGames(at offsets: IndexSet) {
-        games.remove(atOffsets: offsets)
+        history.remove(atOffsets: offsets)
         saveData()
     }
     

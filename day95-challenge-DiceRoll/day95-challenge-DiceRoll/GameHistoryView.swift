@@ -8,22 +8,20 @@
 import SwiftUI
 
 struct GameHistoryView: View {
-    let gameHistory: [GameHistory]
     var body: some View {
         List {
-            ForEach(gameHistory) { game in
+            ForEach(DataManager.shared.history) { game in
                 VStack (alignment: .leading) {
-                    Text("Game date: \(game.createdAt.formatted(.dateTime.day().month().year().hour().minute().second()))")
+                    Text("Game date: \(game.createdAt)")
                     VStack (alignment: .leading) {
                         Text("Dices:")
-                        ForEach(game.gameDices) { gameDice in
-                            Text("\(gameDice.sides) -> \(gameDice.result ?? 0)")
+                        ForEach(game.dices) { gameDice in
+                            Text("\(gameDice.numberOfSides) -> \(gameDice.rolled ?? 0)")
                         }
-                        Text("Total: \(game.total)")
+                        Text("Total: \(game.totalRolled)")
                     }
                 }
-            }
-            .onDelete(perform: deleteItems)
+            }.onDelete(perform: deleteItems)
         }
     }
     
@@ -33,20 +31,5 @@ struct GameHistoryView: View {
 }
 
 #Preview {
-    GameHistoryView(gameHistory:
-                        [
-                            GameHistory(gameDices:
-                                        [
-                                            Dice(sides: .four, result: 4),
-                                            Dice(sides: .six, result: 6)
-                                        ],
-                                     total: 4),
-                            GameHistory(gameDices:
-                                        [
-                                            Dice(sides: .four, result: 4),
-                                            Dice(sides: .six, result: 6)
-                                        ],
-                                     total: 4),
-                        ]
-    )
+    GameHistoryView()
 }
