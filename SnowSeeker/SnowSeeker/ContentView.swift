@@ -7,25 +7,27 @@
 
 import SwiftUI
 
-struct UserView: View {
-    var body: some View {
-        Group{
-            Text("Name: rafael")
-            Text("Bla: bla bla")
-            Text("Bla: bla bla")
-        }
-        .font(.title)
-    }
-}
-
 struct ContentView: View {
+    @State private var searchText = ""
+    let allNames = ["Soup", "Tomato", "Abacaxi"]
+    
+    var filteredNames: [String] {
+        if searchText.isEmpty {
+            allNames
+        } else {
+            allNames.filter { name in
+                name.localizedStandardContains(searchText)
+            }
+        }
+    }
+    
     var body: some View {
-        ViewThatFits {
-            Rectangle()
-                .frame(width: 500, height: 200)
-            
-            Circle()
-                .frame(width: 200, height: 200)
+        NavigationStack {
+            List(filteredNames, id: \.self) { name in
+                Text(name)
+            }
+            .searchable(text: $searchText, prompt: "Look for something")
+            .navigationTitle("Searching")
         }
     }
 }
@@ -37,8 +39,37 @@ struct ContentView: View {
 /**
  
  ------
+ Day 96 - aula 5
+ 
+ 
+ 
+ ------
  Day 96 - aula 4
  
+ struct ContentView: View {
+     @State private var searchText = ""
+     let allNames = ["Soup", "Tomato", "Abacaxi"]
+     
+     var filteredNames: [String] {
+         if searchText.isEmpty {
+             allNames
+         } else {
+             allNames.filter { name in
+                 name.localizedStandardContains(searchText)
+             }
+         }
+     }
+     
+     var body: some View {
+         NavigationStack {
+             List(filteredNames, id: \.self) { name in
+                 Text(name)
+             }
+             .searchable(text: $searchText, prompt: "Look for something")
+             .navigationTitle("Searching")
+         }
+     }
+ }
  
  
  ------
