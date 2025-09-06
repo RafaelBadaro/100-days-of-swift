@@ -7,12 +7,26 @@
 
 import SwiftUI
 
+struct UserView: View {
+    var body: some View {
+        Group{
+            Text("Name: rafael")
+            Text("Bla: bla bla")
+            Text("Bla: bla bla")
+        }
+        .font(.title)
+    }
+}
 
 struct ContentView: View {
-
-    
     var body: some View {
-   
+        ViewThatFits {
+            Rectangle()
+                .frame(width: 500, height: 200)
+            
+            Circle()
+                .frame(width: 200, height: 200)
+        }
     }
 }
 
@@ -22,7 +36,75 @@ struct ContentView: View {
 
 /**
  
+ ------
+ Day 96 - aula 4
+ 
+ 
+ 
+ ------
  Day 96 - aula 3
+ 
+ struct UserView: View {
+     var body: some View {
+         Group{
+             Text("1")
+             Text("2")
+             Text("3")
+         }
+         .font(.title)
+     }
+ }
+
+ struct ContentView: View {
+     @State private var layoutVertically = false
+     
+     var body: some View {
+         Button {
+             layoutVertically.toggle()
+         } label: {
+             if layoutVertically {
+                 VStack {
+                     UserView()
+                 }
+             } else {
+                 HStack {
+                     UserView()
+                 }
+             }
+         }
+        
+     }
+ }
+ 
+ struct ContentView: View {
+     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+     
+     var body: some View {
+         if horizontalSizeClass == .compact {
+             VStack(content: UserView.init)
+         } else {
+             HStack(content: UserView.init)
+         }
+     }
+ }
+ 
+ 
+ struct ContentView: View {
+     var body: some View {
+         ViewThatFits {
+             Rectangle()
+                 .frame(width: 500, height: 200)
+             
+             Circle()
+                 .frame(width: 200, height: 200)
+         }
+     }
+ }
+
+ 
+ 
+ 
+ 
  
  ------
  Day 96 - aula 2
