@@ -10,11 +10,11 @@ import Observation
 
 @Observable
 class Favorites {
-    private var resorts: Set<String>
+    private var resorts: Set<String> = []
     private let key = "Favorites"
     
     init() {
-        resorts = []
+        self.loadResorts()
     }
     
     func contains(_ resort: Resort) -> Bool {
@@ -32,6 +32,12 @@ class Favorites {
     }
     
     func save() {
-        
+        UserDefaults.standard.set(Array(resorts), forKey: key)
+    }
+    
+    func loadResorts() {
+        if let resortsString = UserDefaults.standard.array(forKey: key) as? [String] {
+            self.resorts = Set(resortsString)
+        }
     }
 }

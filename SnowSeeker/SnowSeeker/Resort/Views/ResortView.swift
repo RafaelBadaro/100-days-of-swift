@@ -48,6 +48,13 @@ private extension ResortView {
         Image(decorative: resort.id)
             .resizable()
             .scaledToFit()
+            .overlay(alignment: .bottomTrailing) {
+                Text("Photo by \(resort.imageCredit)")
+                    .font(.caption)
+                    .foregroundStyle(.white)
+                    .background(.black.opacity(0.4))
+                
+            }
     }
     
     private var detailViews: some View {
